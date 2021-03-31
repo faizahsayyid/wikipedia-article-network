@@ -2,10 +2,63 @@
 YOOOO
 BFS Stuffs
 """
+
 from lectures.week08.lec16_exercises import Graph
 from typing import Any
-import urllib
+import urllib.request
 from html.parser import HTMLParser
+
+
+class Parse(HTMLParser):
+    """..."""
+
+    def __init__(self) -> None:
+        """..."""
+        # Since Python 3, we need to call the __init__() function of the parent class
+        super().__init__()
+        self.reset()
+
+    def error(self, message) -> None:
+        """..."""
+        pass
+
+    # Defining what the method should output when called by HTMLParser.
+    def handle_starttag(self, tag, attrs) -> None:
+        """..."""
+        # Only parse the 'anchor' tag.
+        if tag == "a":
+            for name, link in attrs:
+                if name == "href" and link.startswith("https"):
+                    print(link)
+
+
+class WikipediaParse(HTMLParser):
+    """..."""
+    articles: list[str]
+
+    def __init__(self) -> None:
+        """..."""
+        # Since Python 3, we need to call the __init__() function of the parent class
+        super().__init__()
+        self.articles = []
+        self.reset()
+
+    def error(self, message) -> None:
+        """..."""
+        pass
+
+    # Defining what the method should output when called by HTMLParser.
+    def handle_starttag(self, tag, attrs) -> None:
+        """..."""
+        # Only parse the 'anchor' tag.
+        if tag == "a":
+            for name, link in attrs:
+                unwanted_page = ('Special:' in link) or ('Help:' in link) \
+                                 or ('Wikipedia:' in link) or ('Category:' in link) \
+                                 or ('Portal:' in link) or ('Book:' in link)
+
+                if name == "href" and link.startswith('/wiki/') and not unwanted_page:
+                    self.articles.append('https://en.wikipedia.org/' + link)
 
 
 class Queue:
@@ -117,7 +170,7 @@ def example() -> Graph:
     return g
 
 
-def BFS_Wikipedia(starting_url: str, num_sources: int) -> Graph:
+def bfs_wikipedia(starting_url: str, num_sources: int) -> Graph:
     """..."""
     q = Queue()
     curr_url = starting_url
@@ -131,9 +184,6 @@ def BFS_Wikipedia(starting_url: str, num_sources: int) -> Graph:
 
     while not (q.is_empty() or sources_found >= num_sources):
         curr_url = q.dequeue()
-        sources_found += 1
-
-        # scrapy function(url) -> urls on the page
 
         neighbours = get_adjacent_urls(curr_url)
 
@@ -141,6 +191,7 @@ def BFS_Wikipedia(starting_url: str, num_sources: int) -> Graph:
             if v not in visited:
                 q.enqueue(v)
                 visited.append(v)
+                sources_found += 1
                 wiki_network_so_far.add_vertex(v)
                 wiki_network_so_far.add_edge(curr_url, v)
 
@@ -149,4 +200,12 @@ def BFS_Wikipedia(starting_url: str, num_sources: int) -> Graph:
 
 def get_adjacent_urls(url: str) -> list[str]:
     """..."""
-    # scrapy stuff
+
+    data_to_parse = urllib.request.urlopen(url)
+    html = data_to_parse.read().decode()
+    data_to_parse.close()
+
+    parser = WikipediaParse()
+    parser.feed(html)
+
+    return parser.articles
