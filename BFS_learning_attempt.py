@@ -4,6 +4,8 @@ BFS Stuffs
 """
 from lectures.week08.lec16_exercises import Graph
 from typing import Any
+import urllib
+from html.parser import HTMLParser
 
 
 class Queue:
