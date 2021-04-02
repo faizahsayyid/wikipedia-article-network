@@ -170,8 +170,15 @@ def example() -> Graph:
     return g
 
 
+# def bfs_wikipedia(starting_url: str, num_sources: int, sources_per_page) -> Graph:
 def bfs_wikipedia(starting_url: str, num_sources: int) -> Graph:
-    """..."""
+    """ Find <num_sources> number of sources from the <starting_url> Wikipedia.
+
+    Return a Graph with all the sources and the <starting_url> as its vertex.
+
+    If one wikipedia article contains the link to another wikipedia article,
+    then they are adjacent.
+    """
     q = Queue()
     curr_url = starting_url
     visited = []
@@ -199,7 +206,7 @@ def bfs_wikipedia(starting_url: str, num_sources: int) -> Graph:
 
 
 def get_adjacent_urls(url: str) -> list[str]:
-    """..."""
+    """Return a List of all adjacent urls in strings to the input url."""
 
     data_to_parse = urllib.request.urlopen(url)
     html = data_to_parse.read().decode()
