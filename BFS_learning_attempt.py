@@ -4,7 +4,8 @@ BFS Stuffs
 """
 
 from lectures.week08.lec16_exercises import Graph
-from typing import Any
+from wikigraph import WikiGraph
+from typing import Any, Optional
 import urllib.request
 from html.parser import HTMLParser
 
@@ -55,7 +56,9 @@ class WikipediaParse(HTMLParser):
             for name, link in attrs:
                 unwanted_page = ('Special:' in link) or ('Help:' in link) \
                                  or ('Wikipedia:' in link) or ('Category:' in link) \
-                                 or ('Portal:' in link) or ('Book:' in link)
+                                 or ('Portal:' in link) or ('Book:' in link) or ('JPG' in link) \
+                                 or ('jpg' in link) or ('File:' in link) or ('Talk' in link) \
+                                 or ('(disambiguation)' in link)
 
                 if name == "href" and link.startswith('/wiki/') and not unwanted_page:
                     self.articles.append('https://en.wikipedia.org/' + link)
@@ -170,8 +173,8 @@ def example() -> Graph:
     return g
 
 
-# def bfs_wikipedia(starting_url: str, num_sources: int, sources_per_page) -> Graph:
-def bfs_wikipedia(starting_url: str, num_sources: int) -> Graph:
+def bfs_wikipedia(starting_url: str, num_sources: int, sources_per_page: Optional[int] = None) \
+        -> Graph:
     """ Find <num_sources> number of sources from the <starting_url> Wikipedia.
 
     Return a Graph with all the sources and the <starting_url> as its vertex.
@@ -192,7 +195,10 @@ def bfs_wikipedia(starting_url: str, num_sources: int) -> Graph:
     while not (q.is_empty() or sources_found >= num_sources):
         curr_url = q.dequeue()
 
-        neighbours = get_adjacent_urls(curr_url)
+        if sources_per_page is None:
+            neighbours = get_adjacent_urls(curr_url)
+        else:
+            neighbours = get_adjacent_urls(curr_url)[:sources_per_page]
 
         for v in neighbours:
             if v not in visited:
