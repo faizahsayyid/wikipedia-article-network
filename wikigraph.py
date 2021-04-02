@@ -35,7 +35,8 @@ class _Vertex:
         - all(self in u.neighbours for u in self.neighbours)
     """
     name: str
-    neighbours: dict[_Vertex, str]
+    url: str
+    neighbours: set[_Vertex]
 
     def __init__(self, name: str) -> None:
         """Initialize a new vertex with the given page name.
@@ -43,7 +44,7 @@ class _Vertex:
         This vertex is initialized with no neighbours.
         """
         self.name = name
-        self.neighbours = {}
+        self.neighbours = set()
 
     def degree(self) -> int:
         """Return the degree of this vertex."""
