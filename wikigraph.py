@@ -1,18 +1,13 @@
 """CSC111 Winter 2021 Final Project: Wikipedia Graph Class
-
 Module Description
 ===============================
-
 [INSERT MODULE DESCRIPTION]
-
 Copyright and Usage Information
 ===============================
-
 This file is provided solely for the personal and private use of Faizah Sayyid, Tina Zhang,
 Poorvi Sharma, and Courtney Amm (students at the University of Toronto St. George campus).
 All forms of distribution of this code, whether as given or with any changes, are expressly
 prohibited.
-
 This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtney Amm.
 """
 from __future__ import annotations
@@ -27,8 +22,8 @@ class _Vertex:
 
     Instance Attributes:
         - name: The data stored in this vertex.
-        - neighbours: The vertices that are adjacent to this vertex, and their corresponding
-            links represented as strings.
+        - url: The URL of this webpage.
+        - neighbours: The vertices that are adjacent to this vertex.
 
     Representation Invariants:
         - self not in self.neighbours
@@ -38,12 +33,13 @@ class _Vertex:
     url: str
     neighbours: set[_Vertex]
 
-    def __init__(self, name: str) -> None:
-        """Initialize a new vertex with the given page name.
+    def __init__(self, name: str, url: str) -> None:
+        """Initialize a new vertex with the given page name and url.
 
         This vertex is initialized with no neighbours.
         """
         self.name = name
+        self.url = url
         self.neighbours = set()
 
     def degree(self) -> int:
@@ -64,18 +60,17 @@ class WikiGraph:
         """Initialize an empty graph (no vertices or edges)."""
         self._vertices = {}
 
-    def add_vertex(self, name: str) -> None:
-        """Add a vertex with the given page name to this graph.
+    def add_vertex(self, name: str, url: str) -> None:
+        """Add a vertex with the given page name and url to this graph.
 
         The new vertex is not adjacent to any other vertices.
         Do nothing if the given page is already in this graph.
         """
         if name not in self._vertices:
-            self._vertices[name] = _Vertex(name)
+            self._vertices[name] = _Vertex(name, url)
 
-    def add_edge(self, name1: Any, name2: Any, link: str) -> None:
-        """Add an edge between the two vertices with the given names in this graph,
-        with the given link.
+    def add_edge(self, name1: Any, name2: Any) -> None:
+        """Add an edge between the two vertices with the given names in this graph.
 
         Raise a ValueError if name1 or name2 do not appear as vertices in this graph.
 
@@ -86,11 +81,9 @@ class WikiGraph:
             v1 = self._vertices[name1]
             v2 = self._vertices[name2]
 
-            # Add the new edge
-            v1.neighbours[v2] = link
-            v2.neighbours[v1] = link
+            v1.neighbours.add(v2)
+            v2.neighbours.add(v1)
         else:
-            # We didn't find an existing vertex for both items.
             raise ValueError
 
     def adjacent(self, name1: Any, name2: Any) -> bool:
@@ -145,18 +138,6 @@ class WikiGraph:
                 break
 
         return graph_nx
-
-    def get_weight(self, name1: Any, name2: Any) -> str:
-        """Return the weight of the edge between the given page names.
-
-        Return 0 if name1 and name2 are not adjacent.
-
-        Preconditions:
-            - name1 and name2 are vertices in this graph
-        """
-        v1 = self._vertices[name1]
-        v2 = self._vertices[name2]
-        return v1.neighbours.get(v2, 0)
 
 
 # if __name__ == '__main__':
