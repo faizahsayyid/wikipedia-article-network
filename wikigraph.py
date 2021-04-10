@@ -139,6 +139,16 @@ class WikiGraph:
 
         return graph_nx
 
+    def to_cytoscape(self) -> list[dict]:
+        """Returns the list of graph data needed to display the graph in cytoscape"""
+        cyto_elements = []
+        for vertex in self._vertices:
+            cyto_elements.append({'data': {'id': vertex.url, 'name': vertex.name}})
+            for neighbour in vertex.neighbours:
+                cyto_elements.append({'data': {'source': vertex.url, 'target': neighbour.url,
+                                               'label': vertex.name + ' to ' + neighbour.name}})
+        return cyto_elements
+
 
 # if __name__ == '__main__':
     # You can uncomment the following lines for code checking/debugging purposes.

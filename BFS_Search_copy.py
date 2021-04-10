@@ -55,10 +55,10 @@ class WikipediaParse(HTMLParser):
         if tag == "a":
             for name, link in attrs:
                 unwanted_page = ('Special:' in link) or ('Help:' in link) \
-                                 or ('Wikipedia:' in link) or ('Category:' in link) \
-                                 or ('Portal:' in link) or ('Book:' in link) or ('JPG' in link) \
-                                 or ('jpg' in link) or ('File:' in link) or ('Talk' in link) \
-                                 or ('(disambiguation)' in link)
+                                or ('Wikipedia:' in link) or ('Category:' in link) \
+                                or ('Portal:' in link) or ('Book:' in link) or ('JPG' in link) \
+                                or ('jpg' in link) or ('File:' in link) or ('Talk' in link) \
+                                or ('(disambiguation)' in link)
 
                 if name == "href" and link.startswith('/wiki/') and not unwanted_page:
                     self.articles.append('https://en.wikipedia.org/' + link)
@@ -129,7 +129,7 @@ def bfs(graph: WikiGraph, start: str) -> list:
     ['A', 'B', 'S', 'C', 'G', 'D', 'E', 'F', 'H']
     """
     q = Queue()
-    curr_vertex = graph._vertices[start]
+    curr_vertex = graph.vertices[start]
     visited = []
     output = []
 
@@ -151,13 +151,13 @@ def bfs(graph: WikiGraph, start: str) -> list:
     return output
 
 
-def example() -> Graph:
+def example() -> WikiGraph:
     """Make example graph"""
-    g = Graph()
+    g = WikiGraph()
     alphabet = 'ABCDEFGHS'
 
     for letter in alphabet:
-        g.add_vertex(letter)
+        g.add_vertex('', letter)
 
     g.add_edge('A', 'B')
     g.add_edge('A', 'S')
@@ -174,7 +174,7 @@ def example() -> Graph:
 
 
 def bfs_wikipedia(starting_url: str, num_sources: int, sources_per_page: Optional[int] = None) \
-        -> Graph:
+        -> WikiGraph:
     """ Find <num_sources> number of sources from the <starting_url> Wikipedia.
 
     Return a Graph with all the sources and the <starting_url> as its vertex.
@@ -185,12 +185,12 @@ def bfs_wikipedia(starting_url: str, num_sources: int, sources_per_page: Optiona
     q = Queue()
     curr_url = starting_url
     visited = []
-    wiki_network_so_far = Graph()
+    wiki_network_so_far = WikiGraph()
     sources_found = 0
 
     q.enqueue(curr_url)
     visited.append(curr_url)
-    wiki_network_so_far.add_vertex(curr_url)
+    wiki_network_so_far.add_vertex(curr_url.split('/')[-1], curr_url)
 
     while not (q.is_empty() or sources_found >= num_sources):
         curr_url = q.dequeue()
@@ -205,7 +205,7 @@ def bfs_wikipedia(starting_url: str, num_sources: int, sources_per_page: Optiona
                 q.enqueue(v)
                 visited.append(v)
                 sources_found += 1
-                wiki_network_so_far.add_vertex(v)
+                wiki_network_so_far.add_vertex(v.split('/')[-1], v)
                 wiki_network_so_far.add_edge(curr_url, v)
 
     return wiki_network_so_far
