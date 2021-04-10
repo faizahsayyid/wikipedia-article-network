@@ -83,11 +83,12 @@ class _WikipediaSummaryParser(HTMLParser):
     _skip_footnote: bool
 
     def __init__(self) -> None:
-        """Initialize a new article parser.
+        """Initialize a new summary parser.
 
-        This article parser is initialized an empty list of articles.
+        This summary parser is initialized an empty list of articles.
         """
         super().__init__()
+        self.reset()
         self._found_summary = False
         self._found_info_box = False
         self.summary = ''
@@ -132,6 +133,43 @@ class _WikipediaSummaryParser(HTMLParser):
             self.summary += data
 
 
+class _WikipediaTitleParser(HTMLParser):
+    _found_title: bool
+    title: str
+
+    def __init__(self) -> None:
+        """Initialize a new article parser.
+
+        This article parser is initialized an empty list of articles.
+        """
+        super().__init__()
+        self.reset()
+        self._found_title = False
+        self.title = ''
+
+    def error(self, message) -> None:
+        """Help on function error in module _markupbase
+
+        (This method needed to be implemented for the abstract super class HTMLParser,
+         but doesn't do anything)
+        """
+        pass
+
+    def handle_starttag(self, tag: str, attrs: tuple) -> None:
+        """..."""
+        if tag == 'h1' and self.title == '':
+            for attribute in attrs:
+                name, value = attribute
+                if name == 'class' and value == 'firstHeading':
+                    self._found_title = True
+
+    def handle_data(self, data) -> None:
+        """..."""
+        if self._found_title:
+            self.title = data
+            self._found_title = False
+
+
 def get_adjacent_urls(url: str) -> list[str]:
     """Return a List of all adjacent urls in strings to the input url."""
 
@@ -160,3 +198,15 @@ def get_summary(url: str) -> str:
     parser.feed(html)
 
     return parser.summary
+
+
+def get_title(url: str):
+    """Return the title of the given wikipedia article"""
+    data_to_parse = urllib.request.urlopen(url)
+    html = data_to_parse.read().decode()
+    data_to_parse.close()
+
+    parser = _WikipediaTitleParser()
+    parser.feed(html)
+
+    return parser.title
