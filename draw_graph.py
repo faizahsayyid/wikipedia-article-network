@@ -4,6 +4,7 @@ import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 import build_wikigraph
+import wikipedia_html_parsers
 
 cyto.load_extra_layouts()
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -65,19 +66,29 @@ app.layout = html.Div(children=[
                            },
                            style={'width': '100%', 'height': '50em', 'border-style': 'solid'},
                            elements=initial_graph_elements
-                       )], style={
+                       )],
+        style={
         'width': '70%',
         'float': 'right'
     }),
 
-    html.H5(id='cytoscape_url_and_name_selected', style={
-        'width': '70%',
-        'height': '5em',
-        'border-style': 'solid',
-        'float': 'right',
-        'padding': '.25em .25em .25em .25em'
-    })
-])
+    html.Div(children=[html.H5(id='cytoscape_url', children=""),
+                       html.H5(id='cytoscape_article', children=""),
+                       html.H5(id='cytoscape_summary', children="")],
+             style={
+                 'width': '70%',
+                 'height': '9em',
+                 'border-style': 'solid',
+                 'float': 'right',
+                 'padding': '.25em .25em .25em .25em',
+                 'margin': '.25em .25em .25em .25em'
+             })
+],
+    style={
+        'background-color': '#191308',
+        'opacity': '1'
+    }
+)
 
 
 @app.callback(
@@ -134,12 +145,15 @@ def update_cytoscape_display(n_clicks, url, num_sources, sources_per_page):
         return graph_elements, style_sheet
 
 
-@app.callback(Output('cytoscape_url_and_name_selected', 'children'),
+@app.callback(Output('cytoscape_article', 'children'),
+              Output('cytoscape_url', 'children'),
+              Output('cytoscape_summary', 'children'),
               Input('cytoscape_wiki_graph', 'tapNodeData'))
 def displayTapNodeData(data):
     if data:
-        return "You clicked on the article '" + data['label'] + "' with the url " \
-               + data['id']
+        summary = wikipedia_html_parsers.get_summary(data['id'])
+        return ("Article: '" + data['label'] + "'", "URL: " + data['id'],
+                'Summary: ' + summary)
 
 
 if __name__ == '__main__':
