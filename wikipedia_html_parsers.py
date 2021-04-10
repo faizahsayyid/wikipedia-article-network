@@ -15,9 +15,12 @@ prohibited.
 
 This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtney Amm.
 """
-
+from typing import Optional
 import urllib.request
 from html.parser import HTMLParser
+
+UNWANTED = ['Special:', 'Help:', 'Wikipedia', 'Category:', 'Portal:', 'Book:', '.jpg',
+            '.svg', '.png', '.JPG', '.PNG', '.SVG', 'File:', 'Talk:', '(disambiguation)']
 
 
 class _WikipediaArticleParser(HTMLParser):
@@ -39,8 +42,9 @@ class _WikipediaArticleParser(HTMLParser):
         - all('Book:' not in a for a in self.articles)
     """
     articles: list[str]
+    sources_wanted: Optional[int]
 
-    def __init__(self) -> None:
+    def __init__(self, sources_wanted: Optional[int] = None) -> None:
         """Initialize a new article parser.
 
         This article parser is initialized an empty list of articles.
@@ -48,6 +52,7 @@ class _WikipediaArticleParser(HTMLParser):
         super().__init__()
         self.articles = []
         self.reset()
+        self.sources_wanted = sources_wanted
 
     def error(self, message) -> None:
         """Help on function error in module _markupbase
@@ -61,17 +66,25 @@ class _WikipediaArticleParser(HTMLParser):
         """Parse wikipedia links from html file.
         Add those wikipedia links to self.articles.
         """
-        # Only parse the 'anchor' tags.
-        if tag == "a":
-            for attribute in attrs:
-                name, link = attribute
+        if self.sources_wanted is None:
+            # Only parse the 'anchor' tags.
+            if tag == "a":
+                for attribute in attrs:
+                    name, link = attribute
 
-                unwanted_page = ('Special:' in link) or ('Help:' in link) \
-                    or ('Wikipedia:' in link) or ('Category:' in link) \
-                    or ('Portal:' in link) or ('Book:' in link)
+                    unwanted_page = any((unwanted in link) for unwanted in UNWANTED)
 
-                if name == "href" and link.startswith('/wiki/') and not unwanted_page:
-                    self.articles.append('https://en.wikipedia.org/' + link)
+                    if name == "href" and link.startswith('/wiki/') and not unwanted_page:
+                        self.articles.append('https://en.wikipedia.org' + link)
+        else:
+            if tag == "a" and len(self.articles) < self.sources_wanted:
+                for attribute in attrs:
+                    name, link = attribute
+
+                    unwanted_page = any((unwanted in link) for unwanted in UNWANTED)
+
+                    if name == "href" and link.startswith('/wiki/') and not unwanted_page:
+                        self.articles.append('https://en.wikipedia.org' + link)
 
 
 class _WikipediaSummaryParser(HTMLParser):
@@ -170,14 +183,14 @@ class _WikipediaTitleParser(HTMLParser):
             self._found_title = False
 
 
-def get_adjacent_urls(url: str) -> list[str]:
+def get_adjacent_urls(url: str, sources_wanted: Optional[int]) -> list[str]:
     """Return a List of all adjacent urls in strings to the input url."""
 
     data_to_parse = urllib.request.urlopen(url)
     html = data_to_parse.read().decode()
     data_to_parse.close()
 
-    parser = _WikipediaArticleParser()
+    parser = _WikipediaArticleParser(sources_wanted)
     parser.feed(html)
 
     return parser.articles
@@ -202,11 +215,7 @@ def get_summary(url: str) -> str:
 
 def get_title(url: str):
     """Return the title of the given wikipedia article"""
-    data_to_parse = urllib.request.urlopen(url)
-    html = data_to_parse.read().decode()
-    data_to_parse.close()
 
-    parser = _WikipediaTitleParser()
-    parser.feed(html)
+    title = url.replace('https://en.wikipedia.org/wiki/', '')
 
-    return parser.title
+    return title.replace('_', ' ')

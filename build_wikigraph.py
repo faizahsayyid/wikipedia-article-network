@@ -98,18 +98,21 @@ def build_wikigraph(starting_url: str, num_sources: int, sources_per_page: Optio
     while not (q.is_empty() or sources_found >= num_sources):
         curr_url = q.dequeue()
 
-        if sources_per_page is None:
-            neighbours = get_adjacent_urls(curr_url)
-        else:
-            neighbours = get_adjacent_urls(curr_url)[:sources_per_page]
+        neighbours = get_adjacent_urls(curr_url, sources_per_page)
 
-        for v in neighbours:
+        i = 0
+
+        while not (i >= len(neighbours) or sources_found >= num_sources):
+            v = neighbours[i]
+            i += 1
             if v not in visited:
                 q.enqueue(v)
                 visited.append(v)
-                sources_found += 1
                 v_name = get_title(v)
-                wiki_network_so_far.add_vertex(v_name, v)
+                if not wiki_network_so_far.is_vertex_in_graph(v_name):
+                    wiki_network_so_far.add_vertex(v_name, v)
+                    sources_found += 1
+
                 wiki_network_so_far.add_edge(curr_name, v_name)
 
     return wiki_network_so_far

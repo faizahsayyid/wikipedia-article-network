@@ -115,6 +115,10 @@ class WikiGraph:
         """
         return set(self._vertices.keys())
 
+    def is_vertex_in_graph(self, name) -> bool:
+        """Return whether <name> is a vertex in this graph"""
+        return name in self._vertices
+
     def to_networkx(self, max_vertices: int = 5000) -> nx.Graph:
         """Convert this graph into a networkx Graph.
 
