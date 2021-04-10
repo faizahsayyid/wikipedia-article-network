@@ -75,11 +75,11 @@ def _make_title(output_file: Any) -> None:
     starting_url_text = 'Wikipedia URL: '
     output_file.write(starting_url_text + starting_url + '\n')
 
-    num_sources_text = 'Number of Sources Wanted: '
+    num_sources_text = 'Number of Sources: '
     output_file.write(num_sources_text + str(num_sources) + '\n')
 
     if sources_per_page is not None:
-        sources_per_page_text = 'Sources Per Page Wanted: '
+        sources_per_page_text = 'Sources Per Page: '
         output_file.write(sources_per_page_text + str(sources_per_page) + '\n')
 
     # description
