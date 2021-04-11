@@ -23,6 +23,9 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 import build_wikigraph
 import wikipedia_html_parsers
+import make_txt_file
+#import os
+#import flask
 
 cyto.load_extra_layouts()
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -64,9 +67,10 @@ app.layout = html.Div(children=[
                          'padding-top': '15px',
                          'padding-bottom': '30px'
                      }),
-            html.Button(id='download_txt_file', n_clicks=0,
+            html.Button(id='generate_txt_file', n_clicks=0,
                         children='Press to download a txt file '
-                                 'of all nodes in the graph!')],
+                                 'of all nodes in the graph!'),
+            html.Div(id='txt_download_area')],
         style={
             'width': '27%',
             'float': 'left',
@@ -129,6 +133,10 @@ def update_cytoscape_display(n_clicks, url, num_sources, sources_per_page):
             'text-background-opacity': '1',
             'text-background-padding': '.25em',
             'background-color': '#011C27',
+            'text-border-opacity': '1',
+            'text-border-color': '#242F40',
+            'text-border-width': '2px',
+            'text-border-style': 'solid',
             'color': '#03254E'
         }
     }
@@ -189,9 +197,40 @@ def update_cytoscape_display(n_clicks, url, num_sources, sources_per_page):
               Input('cytoscape_wiki_graph', 'tapNodeData'))
 def displayTapNodeData(data):
     if data:
-        summary = wikipedia_html_parsers.get_summary(data['id'])
-        return ("Article: '" + data['label'] + "'", "URL: " + data['id'],
-                'Summary: ' + summary)
+        try:
+            summary = wikipedia_html_parsers.get_summary(data['id'])
+            return ("Article: '" + data['label'] + "'", "URL: " + data['id'],
+                    'Summary: ' + summary)
+        except KeyError:
+            return ("", "", "")
+
+
+@app.callback(
+    Output('txt_download_area', 'children'),
+    Input('generate_txt_file', 'n_clicks'),
+    State('cytoscape_wiki_graph', 'elements'),
+    State('wiki_url_input', 'value'),
+    State('wiki_num_sources_input', 'value'),
+    State('wiki_num_sources_per_page_input', 'value')
+)
+def create_txt_download(n_clicks, graph_elements, url, num_s, num_s_per_page):
+    if n_clicks > -1 and graph_elements is not None:
+        title = url.replace('https://en.wikipedia.org/wiki/', '')
+        filename = f"{title}.txt"
+        path = f"txt_file_downloads/{filename}"
+        graph_text = make_txt_file.make_txt_file_string(graph_elements, url,
+                                                        title, num_s, num_s_per_page)
+        with open(path, "wb") as file:
+            file.write(graph_text)
+        return ""
+
+#
+# @app.server.route('/txt_file_downloads/<path>')
+# def serve_static(path):
+#     root_dir = os.getcwd()
+#     return flask.send_from_directory(
+#         os.path.join(root_dir, 'txt_file_downloads'), path
+#     )
 
 
 if __name__ == '__main__':

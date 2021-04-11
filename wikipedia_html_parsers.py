@@ -21,7 +21,7 @@ from html.parser import HTMLParser
 
 UNWANTED = ['Special:', 'Help:', 'Wikipedia', 'Category:', 'Portal:', 'Book:', '.jpg',
             '.svg', '.png', '.JPG', '.PNG', '.SVG', 'File:', 'Talk:', '(disambiguation)',
-            'Template:']
+            'Template:', 'Template talk:']
 
 
 class _WikipediaArticleParser(HTMLParser):
@@ -120,13 +120,15 @@ class _WikipediaSummaryParser(HTMLParser):
         """Find the summary of the wikipedia article (update self._found_summary)
         Update self._skip_footnote whenever a footnote is encountered in the summary
         """
-        if self._found_info_box and tag == 'p':
+        # if self._found_info_box and tag == 'p':
+        #     self._found_summary = True
+        # elif tag == 'table':
+        #     for attribute in attrs:
+        #         name, value = attribute
+        #         if name == 'class' and ('infobox' in value):
+        #             self._found_info_box = True
+        if tag == 'p':
             self._found_summary = True
-        elif tag == 'table':
-            for attribute in attrs:
-                name, value = attribute
-                if name == 'class' and ('infobox' in value):
-                    self._found_info_box = True
 
         if tag == 'sup':
             self._skip_footnote = True
@@ -135,7 +137,7 @@ class _WikipediaSummaryParser(HTMLParser):
         """Update self._found_summary the end of the summary is reached
         Update self._skip_footnote the end of a footnote is reached
         """
-        if self._found_summary and tag == 'p':
+        if tag == 'p':
             self._found_summary = False
 
         if tag == 'sup':
@@ -143,45 +145,12 @@ class _WikipediaSummaryParser(HTMLParser):
 
     def handle_data(self, data) -> None:
         """Add parts of the summary of the article to self.summary"""
-        if self._found_summary and (self.summary.count('.') < 2) and not self._skip_footnote:
+        if self._found_summary and (self.summary.count('.') < 2) \
+                and not self._skip_footnote and data != '\n':
             self.summary += data
-
-
-class _WikipediaTitleParser(HTMLParser):
-    _found_title: bool
-    title: str
-
-    def __init__(self) -> None:
-        """Initialize a new article parser.
-
-        This article parser is initialized an empty list of articles.
-        """
-        super().__init__()
-        self.reset()
-        self._found_title = False
-        self.title = ''
-
-    def error(self, message) -> None:
-        """Help on function error in module _markupbase
-
-        (This method needed to be implemented for the abstract super class HTMLParser,
-         but doesn't do anything)
-        """
-        pass
-
-    def handle_starttag(self, tag: str, attrs: tuple) -> None:
-        """..."""
-        if tag == 'h1' and self.title == '':
-            for attribute in attrs:
-                name, value = attribute
-                if name == 'class' and value == 'firstHeading':
-                    self._found_title = True
-
-    def handle_data(self, data) -> None:
-        """..."""
-        if self._found_title:
-            self.title = data
-            self._found_title = False
+            if (self.summary.count('.') >= 2) and not self.summary.endswith('.'):
+                index_of_last_period = self.summary.rindex('.')
+                self.summary = self.summary[:index_of_last_period + 1]
 
 
 class _WikipediaImageParser(HTMLParser):
