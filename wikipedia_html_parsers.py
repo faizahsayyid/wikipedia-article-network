@@ -119,15 +119,13 @@ class _WikipediaSummaryParser(HTMLParser):
         """Find the summary of the wikipedia article (update self._found_summary)
         Update self._skip_footnote whenever a footnote is encountered in the summary
         """
-        # if self._found_info_box and tag == 'p':
-        #     self._found_summary = True
-        # elif tag == 'table':
-        #     for attribute in attrs:
-        #         name, value = attribute
-        #         if name == 'class' and ('infobox' in value):
-        #             self._found_info_box = True
-        if tag == 'p':
+        if self._found_info_box and tag == 'p':
             self._found_summary = True
+        elif tag == 'table':
+            for attribute in attrs:
+                name, value = attribute
+                if name == 'class' and ('infobox' in value):
+                    self._found_info_box = True
 
         if tag == 'sup':
             self._skip_footnote = True
@@ -136,7 +134,7 @@ class _WikipediaSummaryParser(HTMLParser):
         """Update self._found_summary the end of the summary is reached
         Update self._skip_footnote the end of a footnote is reached
         """
-        if tag == 'p':
+        if self._found_summary and tag == 'p':
             self._found_summary = False
 
         if tag == 'sup':
@@ -144,8 +142,7 @@ class _WikipediaSummaryParser(HTMLParser):
 
     def handle_data(self, data) -> None:
         """Add parts of the summary of the article to self.summary"""
-        if self._found_summary and (self.summary.count('.') < 2 or not self.summary.endswith('.')) \
-                and not self._skip_footnote and data != '\n':
+        if self._found_summary and (self.summary.count('.') < 2) and not self._skip_footnote:
             self.summary += data
 
 
