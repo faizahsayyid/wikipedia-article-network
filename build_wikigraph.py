@@ -137,6 +137,6 @@ def build_wikigraph(starting_url: str, num_sources: int, sources_per_page: Optio
                     wiki_graph_so_far.add_vertex(v_name, v)
                     sources_found += 1
 
-                wiki_graph_so_far.add_edge(curr_name, v_name)
+            wiki_graph_so_far.add_edge(curr_name, v_name)
 
     return wiki_graph_so_far
