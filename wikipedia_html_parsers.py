@@ -144,9 +144,12 @@ class _WikipediaSummaryParser(HTMLParser):
 
     def handle_data(self, data) -> None:
         """Add parts of the summary of the article to self.summary"""
-        if self._found_summary and (self.summary.count('.') < 2 or not self.summary.endswith('.')) \
+        if self._found_summary and (self.summary.count('.') < 2) \
                 and not self._skip_footnote and data != '\n':
             self.summary += data
+            if (self.summary.count('.') >= 2) and not self.summary.endswith('.'):
+                index_of_last_period = self.summary.rindex('.')
+                self.summary = self.summary[:index_of_last_period + 1]
 
 
 class _WikipediaTitleParser(HTMLParser):
