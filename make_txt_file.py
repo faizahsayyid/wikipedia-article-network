@@ -104,6 +104,7 @@ def _make_body_entries(output_file: Any) -> None:
             summary = wh.get_summary(url)
 
             if summary == '':
+                print(summary)
                 summary = 'Wikipedia article is empty.'
 
             output_file.write(title + '\n' + '\n')
