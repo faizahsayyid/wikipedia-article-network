@@ -16,17 +16,19 @@ prohibited.
 This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtney Amm.
 """
 from typing import Optional
+import urllib.error
 import urllib.request
 from html.parser import HTMLParser
 
 UNWANTED = ['Special:', 'Help:', 'Wikipedia', 'Category:', 'Portal:', 'Book:', '.jpg',
-            '.svg', '.png', '.JPG', '.PNG', '.SVG', 'File:', 'Talk:', '(disambiguation)']
+            '.svg', '.png', '.JPG', '.PNG', '.SVG', 'File:', 'Talk:', '(disambiguation)'
+            'Module talk:', 'User:', ':', '(disambiguation)']
 
 
 class _WikipediaArticleParser(HTMLParser):
     """An Wikipedia article parser, used to extract Wikipedia links from html code.
 
-    This article parser does not include wikipedia links that contain'Special:', 'Help:',
+    This article parser does not include wikipedia links that contain 'Special:', 'Help:',
     'Wikipedia:', 'Category:', 'Portal:', or 'Book:' in their url.
 
     Instance Attributes:
@@ -42,7 +44,7 @@ class _WikipediaArticleParser(HTMLParser):
         - all('Book:' not in a for a in self.articles)
     """
     articles: list[str]
-    sources_wanted: Optional[int]
+    # sources_wanted: Optional[int]
 
     def __init__(self, sources_wanted: Optional[int] = None) -> None:
         """Initialize a new article parser.
@@ -52,7 +54,7 @@ class _WikipediaArticleParser(HTMLParser):
         super().__init__()
         self.articles = []
         self.reset()
-        self.sources_wanted = sources_wanted
+        # self.sources_wanted = sources_wanted
 
     def error(self, message) -> None:
         """Help on function error in module _markupbase
@@ -66,46 +68,46 @@ class _WikipediaArticleParser(HTMLParser):
         """Parse wikipedia links from html file.
         Add those wikipedia links to self.articles.
         """
-        if self.sources_wanted is None:
-            # Only parse the 'anchor' tags.
-            if tag == "a":
-                for attribute in attrs:
-                    name, link = attribute
+        # if self.sources_wanted is None:
+        # Only parse the 'anchor' tags.
+        if tag == "a":
+            for attribute in attrs:
+                name, link = attribute
 
-                    unwanted_page = any((unwanted in link) for unwanted in UNWANTED)
+                unwanted_page = any((unwanted in link) for unwanted in UNWANTED)
 
-                    if name == "href" and link.startswith('/wiki/') and not unwanted_page:
-                        self.articles.append('https://en.wikipedia.org' + link)
-        else:
-            if tag == "a" and len(self.articles) < self.sources_wanted:
-                for attribute in attrs:
-                    name, link = attribute
-
-                    unwanted_page = any((unwanted in link) for unwanted in UNWANTED)
-
-                    if name == "href" and link.startswith('/wiki/') and not unwanted_page:
-                        self.articles.append('https://en.wikipedia.org' + link)
+                if name == "href" and link.startswith('/wiki/') and not unwanted_page:
+                    self.articles.append('https://en.wikipedia.org' + link)
+        # else:
+        #     if tag == "a" and len(self.articles) < self.sources_wanted:
+        #         for attribute in attrs:
+        #             name, link = attribute
+        #
+        #             unwanted_page = any((unwanted in link) for unwanted in UNWANTED)
+        #
+        #             if name == "href" and link.startswith('/wiki/') and not unwanted_page:
+        #                 self.articles.append('https://en.wikipedia.org' + link)
 
 
 class _WikipediaSummaryParser(HTMLParser):
     """An Wikipedia summary parser, used to extract the summary of a Wikipedia article
     from the html code of the article."""
-    _found_info_box: bool
-    _found_summary: bool
+    _found_p: bool
     summary: str
+    sentences_wanted: int
     _skip_footnote: bool
 
-    def __init__(self) -> None:
+    def __init__(self, sentences_wanted: int = 2) -> None:
         """Initialize a new summary parser.
 
         This summary parser is initialized an empty list of articles.
         """
         super().__init__()
         self.reset()
-        self._found_summary = False
-        self._found_info_box = False
+        self._found_p = False
         self.summary = ''
         self._skip_footnote = False
+        self.sentences_wanted = sentences_wanted
 
     def error(self, message) -> None:
         """Help on function error in module _markupbase
@@ -127,7 +129,7 @@ class _WikipediaSummaryParser(HTMLParser):
         #         if name == 'class' and ('infobox' in value):
         #             self._found_info_box = True
         if tag == 'p':
-            self._found_summary = True
+            self._found_p = True
 
         if tag == 'sup':
             self._skip_footnote = True
@@ -137,69 +139,37 @@ class _WikipediaSummaryParser(HTMLParser):
         Update self._skip_footnote the end of a footnote is reached
         """
         if tag == 'p':
-            self._found_summary = False
+            self._found_p = False
 
         if tag == 'sup':
             self._skip_footnote = False
 
     def handle_data(self, data) -> None:
         """Add parts of the summary of the article to self.summary"""
-        if self._found_summary and (self.summary.count('.') < 2) \
+        if self._found_p and (self.summary.count('.') < self.sentences_wanted) \
                 and not self._skip_footnote and data != '\n':
             self.summary += data
-            if (self.summary.count('.') >= 2) and not self.summary.endswith('.'):
+            if (self.summary.count('.') >= self.sentences_wanted) \
+                    and not self.summary.endswith('.'):
                 index_of_last_period = self.summary.rindex('.')
                 self.summary = self.summary[:index_of_last_period + 1]
 
 
-class _WikipediaTitleParser(HTMLParser):
-    _found_title: bool
-    title: str
-
-    def __init__(self) -> None:
-        """Initialize a new article parser.
-
-        This article parser is initialized an empty list of articles.
-        """
-        super().__init__()
-        self.reset()
-        self._found_title = False
-        self.title = ''
-
-    def error(self, message) -> None:
-        """Help on function error in module _markupbase
-
-        (This method needed to be implemented for the abstract super class HTMLParser,
-         but doesn't do anything)
-        """
-        pass
-
-    def handle_starttag(self, tag: str, attrs: tuple) -> None:
-        """..."""
-        if tag == 'h1' and self.title == '':
-            for attribute in attrs:
-                name, value = attribute
-                if name == 'class' and value == 'firstHeading':
-                    self._found_title = True
-
-    def handle_data(self, data) -> None:
-        """..."""
-        if self._found_title:
-            self.title = data
-            self._found_title = False
-
-
-def get_adjacent_urls(url: str, sources_wanted: Optional[int]) -> list[str]:
+def get_adjacent_urls(url: str) -> list[str]:
     """Return a List of all adjacent urls in strings to the input url."""
 
-    data_to_parse = urllib.request.urlopen(url)
-    html = data_to_parse.read().decode()
-    data_to_parse.close()
+    try:
+        data_to_parse = urllib.request.urlopen(url)
+        html = data_to_parse.read().decode()
+        data_to_parse.close()
 
-    parser = _WikipediaArticleParser(sources_wanted)
-    parser.feed(html)
+        parser = _WikipediaArticleParser()
+        parser.feed(html)
 
-    return parser.articles
+        return parser.articles
+
+    except urllib.error.HTTPError:
+        return []
 
 
 def get_summary(url: str) -> str:
@@ -208,7 +178,6 @@ def get_summary(url: str) -> str:
     Precondtion
         - 'https://en.wikipedia.org/wiki/' in url
     """
-
     data_to_parse = urllib.request.urlopen(url)
     html = data_to_parse.read().decode()
     data_to_parse.close()
