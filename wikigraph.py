@@ -46,6 +46,21 @@ class _Vertex:
         """Return the degree of this vertex."""
         return len(self.neighbours)
 
+    def check_connected(self, target_item: Any, visited: set[_Vertex]) -> bool:
+        """ Return whether this vertex is connected to a vertex corresponding to target_item
+        by a path that DOES NOT use any vertex in visited
+
+        Precondition:
+            - self not in visited
+        """
+        if self.name == target_item:
+            return True
+        else:
+            new_visited = visited.union({self})
+            return any(u.check_connected(target_item, new_visited)
+                       for u in self.neighbours
+                       if u not in visited)
+
 
 class WikiGraph:
     """A graph used to represent a Wikipedia pages network.
@@ -118,6 +133,21 @@ class WikiGraph:
     def is_vertex_in_graph(self, name) -> bool:
         """Return whether <name> is a vertex in this graph"""
         return name in self._vertices
+
+    def connected(self, item1: Any, item2: Any) -> bool:
+        """Return whether item1 and item2 are connected vertices
+        in this graph.
+
+        Return False if item1 or item2 do not appear as vertices
+        in this graph.
+        """
+        if item1 in self._vertices and item2 in self._vertices:
+            v1 = self._vertices[item1]
+            # v2 = self._vertices[item2]
+
+            return v1.check_connected(item2, set())
+        else:
+            return False
 
     def to_networkx(self, max_vertices: int = 5000) -> nx.Graph:
         """Convert this graph into a networkx Graph.
