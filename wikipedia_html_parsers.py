@@ -20,7 +20,8 @@ import urllib.request
 from html.parser import HTMLParser
 
 UNWANTED = ['Special:', 'Help:', 'Wikipedia', 'Category:', 'Portal:', 'Book:', '.jpg',
-            '.svg', '.png', '.JPG', '.PNG', '.SVG', 'File:', 'Talk:', '(disambiguation)']
+            '.svg', '.png', '.JPG', '.PNG', '.SVG', 'File:', 'Talk:', '(disambiguation)',
+            'Template:']
 
 
 class _WikipediaArticleParser(HTMLParser):
@@ -183,6 +184,42 @@ class _WikipediaTitleParser(HTMLParser):
             self._found_title = False
 
 
+class _WikipediaImageParser(HTMLParser):
+    _found_image: bool
+    image: str
+
+    def __init__(self) -> None:
+        """Initialize a new article parser.
+
+        This article parser is initialized an empty list of articles.
+        """
+        super().__init__()
+        self.reset()
+        self._found_image = False
+        self.image = ''
+
+    def error(self, message) -> None:
+        """Help on function error in module _markupbase
+
+        (This method needed to be implemented for the abstract super class HTMLParser,
+         but doesn't do anything)
+        """
+        pass
+
+    def handle_starttag(self, tag: str, attrs: tuple) -> None:
+        """..."""
+        if tag == 'img' and self.image == '':
+            for attrib in attrs:
+                if attrib[0] == 'height' and int(attrib[1]) > 50:
+                    self._found_image = True
+                    break
+            if self._found_image == True:
+                for attrib in attrs:
+                    if attrib[0] == 'src':
+                        self._found_image = True
+                        self.image = attrib[1]
+
+
 def get_adjacent_urls(url: str, sources_wanted: Optional[int]) -> list[str]:
     """Return a List of all adjacent urls in strings to the input url."""
 
@@ -219,3 +256,15 @@ def get_title(url: str):
     title = url.replace('https://en.wikipedia.org/wiki/', '')
 
     return title.replace('_', ' ')
+
+
+def get_image(url: str):
+    """Returns the first image on the wikipedia page"""
+    data_to_parse = urllib.request.urlopen(url)
+    html = data_to_parse.read().decode()
+    data_to_parse.close()
+
+    parser = _WikipediaImageParser()
+    parser.feed(html)
+
+    return parser.image

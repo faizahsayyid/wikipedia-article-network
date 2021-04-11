@@ -12,6 +12,7 @@ This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtn
 """
 from __future__ import annotations
 from typing import Any
+import wikipedia_html_parsers
 import networkx as nx
 
 
@@ -31,6 +32,7 @@ class _Vertex:
     """
     name: str
     url: str
+    image: str
     class_id: str
     neighbours: set[_Vertex]
 
@@ -42,6 +44,7 @@ class _Vertex:
         self.name = name
         self.url = url
         self.class_id = ''.join([str(ord(letter)) for letter in name])
+        self.image = wikipedia_html_parsers.get_image(url)
         self.neighbours = set()
 
     def degree(self) -> int:
@@ -121,13 +124,17 @@ class WikiGraph:
         """Return whether <name> is a vertex in this graph"""
         return name in self._vertices
 
-    def get_vertex(self, name):
+    def get_vertex(self, name) -> _Vertex:
         """Returns the vertex based on the given key"""
         return self._vertices[name]
 
-    def get_class_id(self, name):
+    def get_class_id(self, name) -> str:
         """Returns the class id of a vertex"""
         return self._vertices[name].class_id
+
+    def get_image(self, name) -> str:
+        """Returns the page image"""
+        return self._vertices[name].image
 
     def to_networkx(self, max_vertices: int = 5000) -> nx.Graph:
         """Convert this graph into a networkx Graph.
