@@ -18,32 +18,28 @@ This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtn
 
 import build_wikigraph as bw
 import wikipedia_html_parsers as wh
-from typing import Any
+from wikigraph import WikiGraph
+from typing import Any, Optional
 
 
-# Wiki Graph Variables, will call variables used in the output file when its up on github
-starting_url = 'https://en.wikipedia.org/wiki/Potoooooooo'
-num_sources = 10
-sources_per_page = None
-
-# Txt File Name
-txt_file = 'research_summary.txt'
-
-# Building the Wiki Graph, should be the same one as the dash graph
-wiki_graph = bw.build_wikigraph(starting_url, num_sources, sources_per_page)
-
-# Random Constants
-DIV = '=========='
-
-
-def make_txt_file() -> None:
+def make_txt_file(starting_url: str, num_sources: int,
+                  sources_per_page: Optional[int] = None) -> None:
     """ Create a text file titled <txt_file> of the collected Wikipedia article networks.
     """
+    # make the WikiGraph
+    wiki_graph = _make_graph(starting_url, num_sources, sources_per_page)
+
+    # get title
+    title = wh.get_title(starting_url)
+
+    # txt file name
+    txt_file = title + '_research_summary.txt'
+
     # create initial file to write
     output_file = open(txt_file, "w")
 
     # create title
-    _make_title(output_file)
+    _make_title(output_file, title, starting_url, num_sources, sources_per_page)
 
     output_file.close()
 
@@ -51,19 +47,24 @@ def make_txt_file() -> None:
     output_file = open(txt_file, "a")
 
     # create body
-    _make_body_entries(output_file)
+    _make_body_entries(output_file, wiki_graph, starting_url)
 
     output_file.close()
 
 
-def _make_title(output_file: Any) -> None:
+def _make_graph(starting_url: str, num_sources: int,
+                sources_per_page: Optional[int] = None) -> WikiGraph:
+    """ Returns a WikiGraph graph based on the <starting_url>, <num_sources>, <sources_per_page>.
+    """
+    return bw.build_wikigraph(starting_url, num_sources, sources_per_page)
+
+
+def _make_title(output_file: Any, title: str, starting_url: str, num_sources: int,
+                sources_per_page: Optional[int] = None) -> None:
     """ Write the title of the Wikipedia article,
     <starting_url>, <num_sources>, <sources_per_page> (if there is an input for it), and
     a brief summary of it.
     """
-    # get title
-    title = wh.get_title(starting_url)
-
     # get title description
     summary = wh.get_summary(starting_url)
 
@@ -86,15 +87,17 @@ def _make_title(output_file: Any) -> None:
     output_file.write('\n' + summary + '\n')
 
     # divider
-    output_file.write('\n' + DIV * 10 + '\n')
+    div = '=========='
+
+    output_file.write('\n' + div * 10 + '\n')
 
     results = 'results'
     output_file.write(results)
 
-    output_file.write('\n' + DIV * 10 + '\n')
+    output_file.write('\n' + div * 10 + '\n')
 
 
-def _make_body_entries(output_file: Any) -> None:
+def _make_body_entries(output_file: Any, wiki_graph: WikiGraph, starting_url: str) -> None:
     """ Write title, url, and a brief summary of the Wikipedia entries."""
     for v in wiki_graph.get_all_vertices():
         if v != wh.get_title(starting_url):
@@ -113,7 +116,9 @@ def _make_body_entries(output_file: Any) -> None:
 
             output_file.write(summary + '\n')
 
-            output_file.write('\n' + DIV * 10 + '\n')
+            # divider
+            div = '=========='
+            output_file.write('\n' + div * 10 + '\n')
 
 
 def get_url(name: str) -> str:
