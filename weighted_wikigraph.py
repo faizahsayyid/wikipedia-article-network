@@ -11,8 +11,7 @@ prohibited.
 This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtney Amm.
 """
 from __future__ import annotations
-import csv
-from typing import Any, Union
+from typing import Any
 
 from wikigraph import WikiGraph
 
@@ -53,7 +52,7 @@ class _WeightedVertex:
         return len(self.neighbours)
 
 
-class WeightedGraph(WikiGraph):
+class WeightedWikiGraph(WikiGraph):
     """A weighted graph used to represent a Wikipedia link network that keeps track of
     weights.
 
@@ -127,23 +126,5 @@ class WeightedGraph(WikiGraph):
 
 
 if __name__ == '__main__':
-    # You can uncomment the following lines for code checking/debugging purposes.
-    # However, we recommend commenting out these lines when working with the large
-    # datasets, as checking representation invariants and preconditions greatly
-    # increases the running time of the functions/methods.
-    # import python_ta.contracts
-    # python_ta.contracts.check_all_contracts()
-
     import doctest
-
     doctest.testmod()
-
-    import python_ta
-
-    python_ta.check_all(config={
-        'max-line-length': 100,
-        'disable': ['E1136', 'W0221'],
-        'extra-imports': ['csv', 'a3_part1'],
-        'allowed-io': ['load_weighted_review_graph'],
-        'max-nested-blocks': 4
-    })
