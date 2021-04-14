@@ -18,6 +18,7 @@ This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtn
 from typing import Any
 from wikigraph import WikiGraph
 from wikipedia_html_parsers import get_adjacent_urls, get_title
+from weighted_wikigraph_class import WeightedWikiGraph
 
 
 class _Queue:
@@ -99,6 +100,79 @@ def build_wikigraph(starting_url: str, num_sources: int, sources_per_page: int) 
 
     # ACCUMULATOR wiki_graph_so_far builds up our wikigraph
     wiki_graph_so_far = WikiGraph()
+
+    # ACCUMULATOR sources_found keeps track of the number of sources found
+    sources_found = 0
+
+    # Add initial article to queue, visited, and our wikigraph
+    q.enqueue(curr_url)
+    visited.append(curr_url)
+    curr_name = get_title(curr_url)
+    wiki_graph_so_far.add_vertex(curr_name, curr_url)
+
+    # we will either stop when the queue is empty or, when we have found the
+    # desired number of sources
+    while not (q.is_empty() or sources_found >= num_sources):
+
+        # Reassign curr_url to the next item in the queue
+        curr_url = q.dequeue()
+        curr_name = get_title(curr_url)
+
+        # find the neighbouring links on the article for curr_url
+        neighbours = get_adjacent_urls(curr_url)
+
+        # Reset the counter the following while loop
+        i = 0
+        sources_found_per_page = 0
+
+        # stop loop either when we've added all the neighbours or curr_url
+        # or we found our desired number of sources
+        while not (i >= len(neighbours) or sources_found >= num_sources or
+                   sources_found_per_page >= sources_per_page):
+            v = neighbours[i]
+            v_name = get_title(v)
+            i += 1
+
+            # if the neighbour is not in visited, add it to the graph
+            if v not in visited:
+                q.enqueue(v)
+                visited.append(v)
+
+                if not wiki_graph_so_far.is_vertex_in_graph(v_name):
+                    wiki_graph_so_far.add_vertex(v_name, v)
+                    sources_found_per_page += 1
+                    sources_found += 1
+
+            wiki_graph_so_far.add_edge(curr_name, v_name)
+
+    return wiki_graph_so_far
+
+
+def build_weighted_wikigraph(starting_url: str, num_sources: int,
+                             sources_per_page: int) -> WeightedWikiGraph:
+    """ Find <num_sources> number of sources from the <starting_url> Wikipedia article.
+
+    Return a Graph with all the sources and the <starting_url> as its vertex.
+
+    If one wikipedia article contains the link to another wikipedia article,
+    then they are adjacent.
+
+    NOTE: This function may not return <num_sources> in some cases since wikipedia may have
+    deleted pages but not updated the links on its pages.
+
+    (Implemented with the Breadth-First-Search Algorithm)
+    """
+    # tells us which vertex we should next add to the graph
+    q = _Queue()
+
+    curr_url = starting_url
+
+    # ACCUMULATOR visited keeps track of the vertices we have already visited to make
+    # sure we don't enter an infinite loop
+    visited = []
+
+    # ACCUMULATOR wiki_graph_so_far builds up our wikigraph
+    wiki_graph_so_far = WeightedWikiGraph()
 
     # ACCUMULATOR sources_found keeps track of the number of sources found
     sources_found = 0

@@ -172,6 +172,44 @@ def get_adjacent_urls(url: str) -> list[str]:
         return []
 
 
+def get_adjacent_urls_weighted(url: str) -> dict[tuple[str, str], float]:
+    """Return a List of all adjacent urls in strings to the input url."""
+
+    try:
+        data_to_parse = urllib.request.urlopen(url)
+        html = data_to_parse.read().decode()
+        data_to_parse.close()
+
+        parser = _WikipediaArticleParser()
+        parser.feed(html)
+
+        url_name = get_title(url)
+        neighbours_to_weights = {}
+
+        for article_link in parser.articles:
+            article_name = get_title(article_link)
+            weight1 = html.count(article_name)
+            weight2 = _count_appearances_in_article(article_link, url_name)
+            neighbours_to_weights[(article_link, article_name)] = (weight1 + weight2) / 2
+
+        return neighbours_to_weights
+
+    except urllib.error.HTTPError:
+        return {}
+
+
+def _count_appearances_in_article(url: str, article_name: str) -> int:
+    try:
+        data_to_parse = urllib.request.urlopen(url)
+        html = data_to_parse.read().decode()
+        data_to_parse.close()
+
+        return html.count(article_name)
+
+    except urllib.error.HTTPError:
+        return 0
+
+
 def get_summary(url: str) -> str:
     """Return the summary of the given wikipedia article
 
