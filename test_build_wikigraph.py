@@ -16,7 +16,12 @@ prohibited.
 This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtney Amm.
 """
 
-from build_wikigraph import build_wikigraph
+from build_wikigraph import build_wikigraph, build_weighted_wikigraph
+
+
+# ==================================================================================================
+# TEST BUILD_WIKIGRAPH
+# ==================================================================================================
 
 
 def test_num_sources() -> None:
@@ -38,6 +43,11 @@ def test_connected_to_source() -> None:
     g = build_wikigraph('https://en.wikipedia.org/wiki/Rebecca_Sugar', 20, 3)
 
     assert all(g.connected(v, 'Rebecca Sugar') for v in g.get_all_vertices())
+
+
+# ==================================================================================================
+# TEST BUILD_WEIGHTED_WIKIGRAPH
+# ==================================================================================================
 
 
 if __name__ == '__main__':
