@@ -75,8 +75,7 @@ class EmptyQueueError(Exception):
         return 'dequeue may not be called on an empty queue'
 
 
-def build_wikigraph(starting_url: str, num_sources: int, sources_per_page: Optional[int] = None) \
-        -> WikiGraph:
+def build_wikigraph(starting_url: str, num_sources: int, sources_per_page: int) -> WikiGraph:
     """ Find <num_sources> number of sources from the <starting_url> Wikipedia article.
 
     Return a Graph with all the sources and the <starting_url> as its vertex.
