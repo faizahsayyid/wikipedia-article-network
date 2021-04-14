@@ -14,7 +14,6 @@ from __future__ import annotations
 from typing import Any
 
 from wikigraph import WikiGraph
-from wikipedia_html_parsers import get_adjacent_urls
 
 
 class _WeightedVertex:
@@ -51,17 +50,6 @@ class _WeightedVertex:
     def degree(self) -> int:
         """Return the degree of this vertex."""
         return len(self.neighbours)
-
-    def vertex_score(self, pivot: _WeightedVertex) -> float:
-        """Return the score of the current vertex.
-
-        The score of the vertex is calculated by searching its number of hyperlinked occurrences
-        in the Wikipedia article of the <other> url.
-        """
-        if self.degree() == 0 or pivot.degree() == 0:
-            return 0
-        else:
-            return get_adjacent_urls(pivot.url).count(self.url)
 
 
 class WeightedWikiGraph(WikiGraph):
@@ -111,19 +99,6 @@ class WeightedWikiGraph(WikiGraph):
             v2.neighbours[v1] = weight
         else:
             # We didn't find an existing vertex for both items.
-            raise ValueError
-
-    def get_vertex_score(self, pivot: Any, vertex: Any) -> float:
-        """Return the vertex score of the vertex of interest from the pivot Wiki url.
-
-        Raise a ValueError if pivot or vertex do not appear as vertices in this graph.
-        """
-        if pivot in self._vertices and vertex in self._vertices:
-            p = self._vertices[pivot]
-            v = self._vertices[vertex]
-
-            return v.vertex_score(p)
-        else:
             raise ValueError
 
 

@@ -17,7 +17,7 @@ This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtn
 """
 from typing import Any
 from wikigraph import WikiGraph
-from wikipedia_html_parsers import get_adjacent_urls, get_title
+from wikipedia_html_parsers import get_adjacent_urls, get_adjacent_urls_weighted, get_title
 from weighted_wikigraph_class import WeightedWikiGraph
 
 
@@ -152,7 +152,7 @@ def build_weighted_wikigraph(starting_url: str, num_sources: int,
                              sources_per_page: int) -> WeightedWikiGraph:
     """ Find <num_sources> number of sources from the <starting_url> Wikipedia article.
 
-    Return a Graph with all the sources and the <starting_url> as its vertex.
+    Return a Weighted Graph with all the sources and the <starting_url> as its vertex.
 
     If one wikipedia article contains the link to another wikipedia article,
     then they are adjacent.
@@ -192,7 +192,7 @@ def build_weighted_wikigraph(starting_url: str, num_sources: int,
         curr_name = get_title(curr_url)
 
         # find the neighbouring links on the article for curr_url
-        neighbours = get_adjacent_urls(curr_url)
+        neighbours_keys = list(get_adjacent_urls_weighted(curr_url))
 
         # Reset the counter the following while loop
         i = 0
@@ -200,10 +200,10 @@ def build_weighted_wikigraph(starting_url: str, num_sources: int,
 
         # stop loop either when we've added all the neighbours or curr_url
         # or we found our desired number of sources
-        while not (i >= len(neighbours) or sources_found >= num_sources or
+        while not (i >= len(neighbours_keys) or sources_found >= num_sources or
                    sources_found_per_page >= sources_per_page):
-            v = neighbours[i]
-            v_name = get_title(v)
+            v = neighbours_keys[i][1]
+            v_name = neighbours_keys[i][0]
             i += 1
 
             # if the neighbour is not in visited, add it to the graph
