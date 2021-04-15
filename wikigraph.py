@@ -130,7 +130,14 @@ class WikiGraph:
         return set(self._vertices.keys())
 
     def is_vertex_in_graph(self, name) -> bool:
-        """Return whether <name> is a vertex in this graph"""
+        """Return whether <name> is a vertex in this graph
+        >>> g = WikiGraph()
+        >>> g.add_vertex('Rebecca Sugar', 'https://en.wikipedia.org/wiki/Rebecca_Sugar')
+        >>> g.is_vertex_in_graph('Rebecca Sugar')
+        True
+        >>> g.is_vertex_in_graph('Noelle Stevenson')
+        False
+        """
         return name in self._vertices
 
     def connected(self, item1: Any, item2: Any) -> bool:
@@ -149,21 +156,17 @@ class WikiGraph:
             return False
 
 
-# if __name__ == '__main__':
-    # You can uncomment the following lines for code checking/debugging purposes.
-    # However, we recommend commenting out these lines when working with the large
-    # datasets, as checking representation invariants and preconditions greatly
-    # increases the running time of the functions/methods.
+if __name__ == '__main__':
     # import python_ta.contracts
-
+    #
     # python_ta.contracts.check_all_contracts()
 
-    # import doctest
-    #
-    # doctest.testmod()
-    #
+    import doctest
+
+    doctest.testmod()
+
     # import python_ta
-    #
+
     # python_ta.check_all(config={
     #     'max-line-length': 100,
     #     'disable': ['E1136'],

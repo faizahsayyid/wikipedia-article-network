@@ -182,7 +182,7 @@ def get_adjacent_urls_weighted(url: str) -> list:
 def get_summary(url: str) -> str:
     """Return the summary of the given wikipedia article
 
-    Precondtion
+    Precondition
         - 'https://en.wikipedia.org/wiki/' in url
     """
     data_to_parse = urllib.request.urlopen(url)
@@ -196,8 +196,16 @@ def get_summary(url: str) -> str:
 
 
 def get_title(url: str):
-    """Return the title of the given wikipedia article"""
+    """Return the title of the given wikipedia article
+    >>> get_title('https://en.wikipedia.org/wiki/Rebecca_Sugar')
+    'Rebecca Sugar'
+    """
 
     title = url.replace('https://en.wikipedia.org/wiki/', '')
 
     return title.replace('_', ' ')
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
