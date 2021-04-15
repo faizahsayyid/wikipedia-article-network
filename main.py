@@ -208,10 +208,10 @@ def update_cytoscape_display(n_clicks: int, images: str, weighting: str, url: st
     # Initially builds the graph,
     # with an if statement determining whether to use a weighted graph or an unweighted graph
     if n_clicks > -1 and weighting == 'weighted':
-        new_graph = build_wikigraph.build_weighted(url, int(num_sources), max(
+        new_graph = build_wikigraph.build_weighted_wikigraph(url, int(num_sources), max(
             int(sources_per_page), 0))
     else:
-        new_graph = build_wikigraph.build(url, int(num_sources), max(
+        new_graph = build_wikigraph.build_wikigraph(url, int(num_sources), max(
             int(sources_per_page), 0))
 
     # Converts the graph to a cytoscape graph
