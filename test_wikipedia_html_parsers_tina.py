@@ -37,7 +37,6 @@ def test_get_adjacent_url() -> None:
                 'https://en.wikipedia.org/wiki/Stallion_(horse)',
                 'https://en.wikipedia.org/wiki/Kingdom_of_Great_Britain',
                 'https://en.wikipedia.org/wiki/Francis_Godolphin,_2nd_Earl_of_Godolphin',
-                'https://en.wikipedia.org/wiki/Francis_Godolphin,_2nd_Earl_of_Godolphin',
                 'https://en.wikipedia.org/wiki/Leading_sire_in_Great_Britain_and_Ireland',
 
 
