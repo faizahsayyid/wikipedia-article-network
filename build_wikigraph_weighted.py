@@ -226,7 +226,8 @@ def build_weighted_wikigraph(starting_url: str, num_sources: int,
 
     for edge in edges_to_weights:
         v1, v2 = edge
-        weight = sum(edges_to_weights[edge]) / 2
-        wiki_graph_so_far.add_edge(v1, v2, weight)
+        if v1 != v2:
+            weight = sum(edges_to_weights[edge]) / 2
+            wiki_graph_so_far.add_edge(v1, v2, weight)
 
     return wiki_graph_so_far

@@ -21,7 +21,7 @@ import dash_cytoscape as cyto
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
-import build_wikigraph
+import build_wikigraph_weighted
 import wikipedia_html_parsers
 import make_txt_file
 
@@ -29,18 +29,27 @@ import make_txt_file
 # import flask
 
 cyto.load_extra_layouts()
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
+css_stylesheet = [{'body': {
+    'font-size': '4em',
+    'font-family': "'Open Sans', 'Arial'",
+    'line-height': '1.6',
+    'font-weight': '400'
+}}]
+
+app = dash.Dash(__name__, external_stylesheets=css_stylesheet)
+
+# Layout and initial styling of app
 app.layout = html.Div(children=[
     html.Div(
-        [html.H5(
-            "Input the wikipedia page link that you would like to generate a graph for here!"),
+        [
+            html.H5(
+                "Input the wikipedia page link that you would like to generate a graph for here!"),
             dcc.Input(
                 id='wiki_url_input',
                 placeholder='Enter a topic...',
                 type='text',
-                value='https://en.wikipedia.org/wiki/Alan_Turing',
+                value='https://en.wikipedia.org/wiki/Computer_graphics',
                 style={'width': '100%'}
             ),
             html.H5(
@@ -49,7 +58,7 @@ app.layout = html.Div(children=[
                 id='wiki_num_sources_input',
                 placeholder='Enter a number',
                 type='text',
-                value=30
+                value=20
             ),
 
             html.H5(
@@ -62,6 +71,29 @@ app.layout = html.Div(children=[
                 value=5
             ),
 
+            dcc.RadioItems(id='images_selection',
+                           options=[
+                               {'label': 'Background Images on (Slower)', 'value': 'on'},
+                               {'label': 'Background Images off (Faster)', 'value': 'off'}
+                           ],
+                           value='on',
+                           style={
+                               'padding-top': '1em'
+                           }
+                           ),
+            dcc.RadioItems(id='graph_type_selection',
+                           options=[
+                               {'label': '(Weighted) Most common links on page',
+                                'value': 'weighted'},
+                               {'label': '(Unweighted) First links on page', 'value': 'unweighted'}
+                           ],
+                           value='weighted',
+                           style={
+                               'padding-top': '1em',
+                               'padding-bottom': '1em'
+                           }
+                           ),
+
             html.Div(children=[
                 html.Button(id='update_graph_button', n_clicks=0,
                             children='Press to update graph!',
@@ -73,12 +105,11 @@ app.layout = html.Div(children=[
                             children=html.Div(id="loading-output-1"),
                             style={
                                 'text-justify': 'right',
-                                'padding-left': '8em',
                                 'padding-bottom': '2em'
                             })],
                 style={
                     'padding-bottom': '2em',
-                    'padding-top': '2em'
+                    'padding-top': '1.5em'
                 }
             ),
             html.Button(id='generate_txt_file', n_clicks=0,
@@ -98,8 +129,29 @@ app.layout = html.Div(children=[
                        cyto.Cytoscape(
                            id='cytoscape_wiki_graph',
                            layout={
-                               'name': 'cose-bilkent'
+                               'name': 'cose',
+                               'padding': '50',
+                               'avoidOverlap': 'true'
                            },
+                           stylesheet=[{
+                               'selector': 'node',
+                               'style': {
+                                   'shape': 'ellipse',
+                                   'text-valign': 'center',
+                                   'text-background-shape': 'round-rectangle',
+                                   'text-background-color': '#f0f0f0',
+                                   'text-background-opacity': '1',
+                                   'text-background-padding': '.25em',
+                                   'background-color': '#011C27',
+                                   'text-border-opacity': '1',
+                                   'text-border-color': '#242F40',
+                                   'text-border-width': '2px',
+                                   'text-border-style': 'solid',
+                                   'color': '#03254E',
+                                   'text-wrap': 'wrap'
+                               }
+                           }
+                           ],
                            style={'width': '100%', 'height': '45em', 'border-style': 'solid'},
                        )],
              style={
@@ -126,63 +178,60 @@ app.layout = html.Div(children=[
 )
 
 
+# Callback functions to make the graph interactive:
+
 @app.callback(
     Output('cytoscape_wiki_graph', 'elements'),
     Output('cytoscape_wiki_graph', 'stylesheet'),
     Output("loading-output-1", "children"),
     Input('update_graph_button', 'n_clicks'),
+    State('images_selection', 'value'),
+    State('graph_type_selection', 'value'),
     State('wiki_url_input', 'value'),
     State('wiki_num_sources_input', 'value'),
-    State('wiki_num_sources_per_page_input', 'value')
+    State('wiki_num_sources_per_page_input', 'value'),
+    State('cytoscape_wiki_graph', 'stylesheet')
 )
-def update_cytoscape_display(n_clicks, url, num_sources, sources_per_page):
-    # Going to add try catch here later - we should do some error catching the the
-    # BFS search so that we know what exceptions to catch
-    style_sheet = [{
-        'selector': 'node',
-        'style': {
-            'shape': 'ellipse',
-            'text-valign': 'center',
-            'text-background-shape': 'round-rectangle',
-            'text-background-color': '#f0f0f0',
-            'text-background-opacity': '1',
-            'text-background-padding': '.25em',
-            'background-color': '#011C27',
-            'text-border-opacity': '1',
-            'text-border-color': '#242F40',
-            'text-border-width': '2px',
-            'text-border-style': 'solid',
-            'color': '#03254E',
-            'text-wrap': 'wrap'
-        }
-    }
-    ]
-
-    if n_clicks > -1 and int(sources_per_page) < 1:
-        new_graph = build_wikigraph.build_wikigraph(url, int(num_sources))
+def update_cytoscape_display(n_clicks, images, weighting, url, num_sources, sources_per_page,
+                             style_sheet) -> (list[dict], list[dict], None):
+    """This function builds the cytoscape graph and transforms that graph in to the correct
+    cytoscape format. It also adds styling to the graph as it is built"""
+    # Initially builds the graph,
+    # with an if statement determining whether to use a weighted graph or an unweighted graph
+    if n_clicks > -1 and weighting == 'weighted':
+        new_graph = build_wikigraph_weighted.build_weighted_wikigraph(url, int(num_sources), max(
+            int(sources_per_page), 0))
     else:
-        new_graph = build_wikigraph.build_wikigraph(url, int(num_sources), int(sources_per_page))
-    graph_elements = new_graph.to_cytoscape()
-    for vertex in new_graph.get_all_vertices():
-        temp_width = len(vertex)
-        if new_graph.get_vertex(vertex).url == url:
-            temp_width += 20
-            temp_height = temp_width
-        else:
-            temp_height = int(temp_width * .5)
-        temp_font_size = max(int(temp_width * .025) + int(temp_height * .05), 1)
+        new_graph = build_wikigraph_weighted.build_wikigraph(url, int(num_sources), max(
+            int(sources_per_page), 0))
 
-        # if new_graph.get_vertex(vertex).url == url:
-        #     style_sheet.append({
-        #         'selector': '.' + new_graph.get_class_id(vertex),
-        #         'style': {
-        #             'background-color': '#cca43b',
-        #             'width': str(em_len) + 'em',
-        #             'label': vertex
-        #         }
-        #     })
-        # else:
-        if new_graph.get_image(vertex) == '':
+    # Converts the graph to a cytoscape graph
+    graph_elements = new_graph.to_cytoscape()
+
+    # For Loop to add styling and sizing to each element
+    for vertex in new_graph.get_all_vertices():
+        if images == 'on':
+            temp_image = wikipedia_html_parsers.get_image(new_graph.get_vertex(vertex).url)
+        else:
+            temp_image = ''
+        # Separate handling for when the node is the root page, or had a long or short title
+        if new_graph.get_vertex(vertex).url == url:
+            temp_width = len(vertex) + 20
+            temp_height = temp_width
+            temp_font_size = 3
+        elif len(vertex) > 12:
+            temp_width = len(vertex)
+            temp_height = max(temp_width * .4, 2)
+            temp_font_size = max(temp_height * .15, 1)
+        else:
+            temp_width = len(vertex) + 5
+            temp_height = max(temp_width * .7, 2)
+            temp_font_size = max(temp_height * .2, 1)
+
+        # Adds calculated sizing styling to node.
+        # Also checks if the node has a background image or not before attempting to add one to
+        # avoid errors
+        if temp_image == '':
             style_sheet.append({
                 'selector': '.' + new_graph.get_class_id(vertex),
                 'style': {
@@ -190,7 +239,8 @@ def update_cytoscape_display(n_clicks, url, num_sources, sources_per_page):
                     'width': str(temp_width) + 'em',
                     'text-max-width': str(temp_width - 2) + 'em',
                     'label': vertex,
-                    'font-size': str(temp_font_size) + 'em'
+                    'font-size': str(temp_font_size) + 'em',
+                    'background-image-opacity': '0'
                 }
             })
         else:
@@ -203,9 +253,11 @@ def update_cytoscape_display(n_clicks, url, num_sources, sources_per_page):
                     'label': vertex,
                     'font-size': str(temp_font_size) + 'em',
                     'background-fit': 'cover',
-                    'background-image': new_graph.get_image(vertex)
+                    'background-image': temp_image,
+                    'background-image-opacity': '1'
                 }
             })
+
     return graph_elements, style_sheet, None
 
 
@@ -213,14 +265,18 @@ def update_cytoscape_display(n_clicks, url, num_sources, sources_per_page):
               Output('cytoscape_url', 'children'),
               Output('cytoscape_summary', 'children'),
               Input('cytoscape_wiki_graph', 'tapNodeData'))
-def displayTapNodeData(data):
+def display_name_summary_link_infobox(data) -> (str, str, str):
+    """This function outputs the link, title, and summary of the article in to the infobox
+    below the cytoscape graph"""
     if data:
         try:
             summary = wikipedia_html_parsers.get_summary(data['id'])
             return ("Article: '" + data['label'] + "'", "URL: " + data['id'],
                     'Summary: ' + summary)
-        except KeyError:
+        except NameError:
             return ("", "", "")
+    else:
+        return ("", "", "")
 
 
 @app.callback(
@@ -231,7 +287,8 @@ def displayTapNodeData(data):
     State('wiki_num_sources_input', 'value'),
     State('wiki_num_sources_per_page_input', 'value')
 )
-def create_txt_download(n_clicks, graph_elements, url, num_s, num_s_per_page):
+def create_txt_download(n_clicks, graph_elements, url, num_s, num_s_per_page) -> str:
+    """This function builds and downloads a text file of all elements in the graph for the user"""
     if n_clicks > -1 and graph_elements is not None:
         title = url.replace('https://en.wikipedia.org/wiki/', '')
         filename = f"{title}.txt"

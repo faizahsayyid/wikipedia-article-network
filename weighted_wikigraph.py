@@ -14,7 +14,7 @@ from __future__ import annotations
 from typing import Any
 import wikipedia_html_parsers
 
-from wikigraph import WikiGraph
+from wikigraph_copy import WikiGraph
 
 
 class _WeightedVertex:
@@ -37,7 +37,6 @@ class _WeightedVertex:
     """
     name: Any
     url: str
-    image: str
     class_id: str
     neighbours: dict[_WeightedVertex, int]
 
@@ -49,7 +48,6 @@ class _WeightedVertex:
         self.name = name
         self.url = url
         self.class_id = ''.join([str(ord(letter)) for letter in name])
-        self.image = wikipedia_html_parsers.get_image(url)
         self.neighbours = {}
 
     def degree(self) -> int:
@@ -119,26 +117,26 @@ class WeightedWikiGraph(WikiGraph):
         else:
             raise ValueError
 
-    def get_all_vertices(self) -> set:
-        """Return a set of all vertex page names in this graph.
-        """
-        return set(self._vertices.keys())
-
-    def is_vertex_in_graph(self, name) -> bool:
-        """Return whether <name> is a vertex in this graph"""
-        return name in self._vertices
-
-    def get_vertex(self, name) -> _Vertex:
-        """Returns the vertex based on the given key"""
-        return self._vertices[name]
-
-    def get_class_id(self, name) -> str:
-        """Returns the class id of a vertex"""
-        return self._vertices[name].class_id
-
-    def get_image(self, name) -> str:
-        """Returns the page image"""
-        return self._vertices[name].image
+    # def get_all_vertices(self) -> set:
+    #     """Return a set of all vertex page names in this graph.
+    #     """
+    #     return set(self._vertices.keys())
+    #
+    # def is_vertex_in_graph(self, name) -> bool:
+    #     """Return whether <name> is a vertex in this graph"""
+    #     return name in self._vertices
+    #
+    # def get_vertex(self, name) -> _Vertex:
+    #     """Returns the vertex based on the given key"""
+    #     return self._vertices[name]
+    #
+    # def get_class_id(self, name) -> str:
+    #     """Returns the class id of a vertex"""
+    #     return self._vertices[name].class_id
+    #
+    # def get_image(self, name) -> str:
+    #     """Returns the page image"""
+    #     return self._vertices[name].image
 
     def to_cytoscape(self) -> list[dict]:
         """Returns the list of graph data needed to display the graph in cytoscape"""

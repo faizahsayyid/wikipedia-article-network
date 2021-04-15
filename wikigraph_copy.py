@@ -32,7 +32,6 @@ class _Vertex:
     """
     name: str
     url: str
-    image: str
     class_id: str
     neighbours: set[_Vertex]
 
@@ -44,7 +43,6 @@ class _Vertex:
         self.name = name
         self.url = url
         self.class_id = ''.join([str(ord(letter)) for letter in name])
-        self.image = wikipedia_html_parsers.get_image(url)
         self.neighbours = set()
 
     def degree(self) -> int:
@@ -131,10 +129,6 @@ class WikiGraph:
     def get_class_id(self, name) -> str:
         """Returns the class id of a vertex"""
         return self._vertices[name].class_id
-
-    def get_image(self, name) -> str:
-        """Returns the page image"""
-        return self._vertices[name].image
 
     def to_networkx(self, max_vertices: int = 5000) -> nx.Graph:
         """Convert this graph into a networkx Graph.
