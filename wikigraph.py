@@ -1,15 +1,7 @@
 """CSC111 Winter 2021 Final Project: Wikipedia Graph Class
-
 Module Description
 ===============================
-
-This module contains the WikiGraph class, which is graph used to represent a
-network of wikipedia articles.
-
-Each vertex in the graph represents a Wikipedia page, and an edge exist between
-two vertices v1 and v2 if and only if v1 contains a link to v2 or v2 contains a link
-to v1.
-
+[INSERT MODULE DESCRIPTION]
 Copyright and Usage Information
 ===============================
 This file is provided solely for the personal and private use of Faizah Sayyid, Tina Zhang,
@@ -23,13 +15,14 @@ from typing import Any
 
 
 class _Vertex:
-    """A vertex in a WikiGraph, used to represent a Wikipedia page.
+    """A vertex in a Wikipedia link graph, used to represent a Wikipedia page.
 
     Each vertex name is represented as a string.
 
     Instance Attributes:
         - name: The data stored in this vertex.
         - url: The URL of this webpage.
+        - class_id: A numeric representation of the vertex name to be used as an id for node styling
         - neighbours: The vertices that are adjacent to this vertex.
 
     Representation Invariants:
@@ -38,6 +31,7 @@ class _Vertex:
     """
     name: str
     url: str
+    class_id: str
     neighbours: set[_Vertex]
 
     def __init__(self, name: str, url: str) -> None:
@@ -47,6 +41,7 @@ class _Vertex:
         """
         self.name = name
         self.url = url
+        self.class_id = ''.join([str(ord(letter)) for letter in name])
         self.neighbours = set()
 
     def degree(self) -> int:
@@ -168,21 +163,51 @@ class WikiGraph:
         else:
             return False
 
+    def get_vertex(self, name) -> _Vertex:
+        """Returns the vertex based on the given key"""
+        return self._vertices[name]
+
+    def get_class_id(self, name) -> str:
+        """Returns the class id of a vertex"""
+        return self._vertices[name].class_id
+
+    def to_cytoscape(self) -> list[dict]:
+        """Returns the list of graph data needed to display the graph in cytoscape.
+
+        Each node is represented as a dictionary, with the node's data containing an identifying
+        id and label and it's classes containing it's class_id for custom styling in the graph.
+
+        Each edge is also a dictionary, containing the source of the edge, target of the edge, and
+        the label of the edge.
+        """
+        cyto_elements = []
+
+        # Iterate through every vertex in the graph
+        for vertex in self._vertices:
+
+            # Add the vertex to the graph
+            cyto_elements.append({'data': {'id': self._vertices[vertex].url,
+                                           'label': self._vertices[vertex].name},
+                                  'classes': self._vertices[vertex].class_id})
+
+            # Add all of the vertex's edges
+            for neighbour in self._vertices[vertex].neighbours:
+                cyto_elements.append({'data': {'source': self._vertices[vertex].url,
+                                               'target': neighbour.url,
+                                               'label': self._vertices[vertex].name + ' to ' +
+                                                        neighbour.name}})
+        return cyto_elements
+
 
 if __name__ == '__main__':
     import python_ta.contracts
 
     python_ta.contracts.check_all_contracts()
 
-    import doctest
-
-    doctest.testmod()
-
     import python_ta
 
     python_ta.check_all(config={
-        'extra-imports': [],
-        'allowed-io': [],
         'max-line-length': 100,
-        'disable': ['E1136']
+        'disable': ['E1136', 'E9999'],
+        'max-nested-blocks': 4
     })
