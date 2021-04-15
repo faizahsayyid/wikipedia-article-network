@@ -195,7 +195,7 @@ def get_adjacent_urls_weighted(url: str) -> list:
         html = data_to_parse.read().decode()
         data_to_parse.close()
 
-        parser = _WikipediaArticleParser()
+        parser = _WikipediaArticleParser(url)
         parser.feed(html)
 
         neighbours_to_weights = {}
