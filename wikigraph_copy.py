@@ -156,25 +156,16 @@ class WikiGraph:
                                                         neighbour.name}})
         return cyto_elements
 
-# if __name__ == '__main__':
-# You can uncomment the following lines for code checking/debugging purposes.
-# However, we recommend commenting out these lines when working with the large
-# datasets, as checking representation invariants and preconditions greatly
-# increases the running time of the functions/methods.
-# import python_ta.contracts
 
-# python_ta.contracts.check_all_contracts()
+if __name__ == '__main__':
+    import python_ta.contracts
 
-# import doctest
-#
-# doctest.testmod()
-#
-# import python_ta
-#
-# python_ta.check_all(config={
-#     'max-line-length': 100,
-#     'disable': ['E1136'],
-#     'extra-imports': ['csv', 'networkx'],
-#     'allowed-io': ['load_review_graph'],
-#     'max-nested-blocks': 4
-# })
+    python_ta.contracts.check_all_contracts()
+
+    import python_ta
+
+    python_ta.check_all(config={
+        'max-line-length': 100,
+        'disable': ['E1136', 'E9999'],
+        'max-nested-blocks': 4
+    })

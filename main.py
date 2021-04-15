@@ -200,8 +200,9 @@ app.layout = html.Div(children=[
     State('wiki_num_sources_input', 'value'),
     State('wiki_num_sources_per_page_input', 'value'),
     State('cytoscape_wiki_graph', 'stylesheet'))
-def update_cytoscape_display(n_clicks, images, weighting, url, num_sources, sources_per_page,
-                             style_sheet) -> (list[dict], list[dict], None):
+def update_cytoscape_display(n_clicks: int, images: str, weighting: str, url: str, num_sources: str,
+                             sources_per_page: str, style_sheet: list) \
+                            -> (list[dict], list[dict], None):
     """This function builds the cytoscape graph and transforms that graph in to the correct
     cytoscape format. It also adds styling to the graph as it is built"""
     # Initially builds the graph,
@@ -274,7 +275,7 @@ def update_cytoscape_display(n_clicks, images, weighting, url, num_sources, sour
               Output('cytoscape_url', 'children'),
               Output('cytoscape_summary', 'children'),
               Input('cytoscape_wiki_graph', 'tapNodeData'))
-def display_name_summary_link_infobox(data) -> (str, str, str):
+def display_node_information(data: dict) -> (str, str, str):
     """This function outputs the link, title, and summary of the selected article node in to the
     infobox below the cytoscape graph"""
     if data:
@@ -298,7 +299,8 @@ def display_name_summary_link_infobox(data) -> (str, str, str):
     State('wiki_num_sources_input', 'value'),
     State('wiki_num_sources_per_page_input', 'value')
 )
-def create_txt_download(n_clicks, graph_elements, url, num_s, num_s_per_page) -> (dict, None):
+def create_txt_download(n_clicks: int, graph_elements: list, url: str, num_s: str,
+                        num_s_per_page: str) -> (dict, None):
     """This function builds the content of a text file of all elements in the graph for the user
     after the graph is updated, which is then sent to the dcc.download component to be downloaded by
     the user. """
@@ -325,4 +327,12 @@ def create_txt_download(n_clicks, graph_elements, url, num_s, num_s_per_page) ->
 
 
 if __name__ == '__main__':
+    # import python_ta
+    #
+    # python_ta.check_all(config={
+    #     'max-line-length': 100,
+    #     'disable': ['E1136', 'E9997', 'R0913', 'E9999'],
+    #     'max-nested-blocks': 4
+    # })
+
     app.run_server(debug=True, port=3004)
