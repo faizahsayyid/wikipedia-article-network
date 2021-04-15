@@ -39,6 +39,7 @@ class _WeightedVertex:
     Instance Attributes:
         - name: The data stored in this vertex.
         - url: The URL of this webpage.
+        - class_id: A numeric representation of the vertex name to be used as an id for node styling
         - neighbours: The vertices that are adjacent to this vertex, and their corresponding
             edge weights.
 
@@ -48,6 +49,7 @@ class _WeightedVertex:
     """
     name: Any
     url: str
+    class_id: str
     neighbours: dict[_WeightedVertex, int]
 
     def __init__(self, name: str, url: str) -> None:
@@ -57,6 +59,7 @@ class _WeightedVertex:
         """
         self.name = name
         self.url = url
+        self.class_id = ''.join([str(ord(letter)) for letter in name])
         self.neighbours = {}
 
     def degree(self) -> int:

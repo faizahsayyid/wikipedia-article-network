@@ -21,7 +21,7 @@ import dash_cytoscape as cyto
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
-import build_wikigraph_weighted
+import build_wikigraph
 import wikipedia_html_parsers
 import make_txt_file
 
@@ -208,10 +208,10 @@ def update_cytoscape_display(n_clicks: int, images: str, weighting: str, url: st
     # Initially builds the graph,
     # with an if statement determining whether to use a weighted graph or an unweighted graph
     if n_clicks > -1 and weighting == 'weighted':
-        new_graph = build_wikigraph_weighted.build_weighted_wikigraph(url, int(num_sources), max(
+        new_graph = build_wikigraph_weighted.build_weighted(url, int(num_sources), max(
             int(sources_per_page), 0))
     else:
-        new_graph = build_wikigraph_weighted.build_wikigraph(url, int(num_sources), max(
+        new_graph = build_wikigraph_weighted.build(url, int(num_sources), max(
             int(sources_per_page), 0))
 
     # Converts the graph to a cytoscape graph
@@ -334,5 +334,4 @@ if __name__ == '__main__':
     #     'disable': ['E1136', 'E9997', 'R0913', 'E9999'],
     #     'max-nested-blocks': 4
     # })
-
     app.run_server(debug=True, port=3004)

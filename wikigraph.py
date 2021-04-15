@@ -30,6 +30,7 @@ class _Vertex:
     Instance Attributes:
         - name: The data stored in this vertex.
         - url: The URL of this webpage.
+        - class_id: A numeric representation of the vertex name to be used as an id for node styling
         - neighbours: The vertices that are adjacent to this vertex.
 
     Representation Invariants:
@@ -38,6 +39,7 @@ class _Vertex:
     """
     name: str
     url: str
+    class_id: str
     neighbours: set[_Vertex]
 
     def __init__(self, name: str, url: str) -> None:
@@ -47,6 +49,7 @@ class _Vertex:
         """
         self.name = name
         self.url = url
+        self.class_id = ''.join([str(ord(letter)) for letter in name])
         self.neighbours = set()
 
     def degree(self) -> int:
@@ -167,6 +170,37 @@ class WikiGraph:
             return v1.check_connected(item2, set())
         else:
             return False
+
+    def get_class_id(self, name) -> str:
+        """Returns the class id of a vertex"""
+        return self._vertices[name].class_id
+
+    def to_cytoscape(self) -> list[dict]:
+        """Returns the list of graph data needed to display the graph in cytoscape.
+
+        Each node is represented as a dictionary, with the node's data containing an identifying
+        id and label and it's classes containing it's class_id for custom styling in the graph.
+
+        Each edge is also a dictionary, containing the source of the edge, target of the edge, and
+        the label of the edge.
+        """
+        cyto_elements = []
+
+        # Iterate through every vertex in the graph
+        for vertex in self._vertices:
+
+            # Add the vertex to the graph
+            cyto_elements.append({'data': {'id': self._vertices[vertex].url,
+                                           'label': self._vertices[vertex].name},
+                                  'classes': self._vertices[vertex].class_id})
+
+            # Add all of the vertex's edges
+            for neighbour in self._vertices[vertex].neighbours:
+                cyto_elements.append({'data': {'source': self._vertices[vertex].url,
+                                               'target': neighbour.url,
+                                               'label': self._vertices[vertex].name + ' to ' +
+                                                        neighbour.name}})
+        return cyto_elements
 
 
 if __name__ == '__main__':
