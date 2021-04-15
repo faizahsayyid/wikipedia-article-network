@@ -21,7 +21,7 @@ from html.parser import HTMLParser
 
 UNWANTED = ['Special:', 'Help:', 'Wikipedia', 'Category:', 'Portal:', 'Book:', '.jpg',
             '.svg', '.png', '.JPG', '.PNG', '.SVG', 'File:', 'Talk:', '(disambiguation)'
-            'Module talk:', 'User:', ':', '(disambiguation)']
+            'Module talk:', 'User:', ':', '(disambiguation)', 'Main_Page']
 
 
 class _WikipediaArticleParser(HTMLParser):
@@ -61,7 +61,7 @@ class _WikipediaArticleParser(HTMLParser):
         """
         pass
 
-    def handle_starttag(self, tag, attrs) -> None:
+    def handle_starttag(self, tag: str, attrs: list[tuple]) -> None:
         """Parse wikipedia links from html file.
         Add those wikipedia links to self.articles.
         """
@@ -105,9 +105,22 @@ class _WikipediaSummaryParser(HTMLParser):
         """
         pass
 
-    def handle_starttag(self, tag, attrs) -> None:
+    def handle_starttag(self, tag: str, attrs: list[tuple]) -> None:
         """Find the summary of the wikipedia article (update self._found_summary)
         Update self._skip_footnote whenever a footnote is encountered in the summary
+
+        >>> summary_parser = _WikipediaSummaryParser()
+        >>> summary_parser.handle_starttag('p', [])
+        >>> summary_parser._found_p
+        True
+        >>> summary_parser.handle_starttag('sup', [])
+        >>> summary_parser._skip_footnote
+        True
+        >>> summary_parser.handle_starttag('h1', [])
+        >>> summary_parser._found_p
+        True
+        >>> summary_parser._skip_footnote
+        True
         """
         if tag == 'p':
             self._found_p = True
@@ -115,9 +128,22 @@ class _WikipediaSummaryParser(HTMLParser):
         if tag == 'sup':
             self._skip_footnote = True
 
-    def handle_endtag(self, tag) -> None:
+    def handle_endtag(self, tag: str) -> None:
         """Update self._found_summary the end of the summary is reached
         Update self._skip_footnote the end of a footnote is reached
+
+        >>> summary_parser = _WikipediaSummaryParser()
+        >>> summary_parser.handle_endtag('p')
+        >>> summary_parser._found_p
+        False
+        >>> summary_parser.handle_endtag('sup')
+        >>> summary_parser._skip_footnote
+        False
+        >>> summary_parser.handle_endtag('h1')
+        >>> summary_parser._found_p
+        False
+        >>> summary_parser._skip_footnote
+        False
         """
         if tag == 'p':
             self._found_p = False
@@ -125,7 +151,7 @@ class _WikipediaSummaryParser(HTMLParser):
         if tag == 'sup':
             self._skip_footnote = False
 
-    def handle_data(self, data) -> None:
+    def handle_data(self, data: str) -> None:
         """Add parts of the summary of the article to self.summary"""
         if self._found_p and (self.summary.count('.') < self.sentences_wanted) \
                 and not self._skip_footnote and data != '\n':
@@ -153,7 +179,6 @@ def get_adjacent_urls(url: str) -> list[str]:
         return []
 
 
-# list[tuple[tuple[str, str], float]]
 def get_adjacent_urls_weighted(url: str) -> list:
     """Return a List of all adjacent urls in strings to the input url."""
 
@@ -197,6 +222,7 @@ def get_summary(url: str) -> str:
 
 def get_title(url: str):
     """Return the title of the given wikipedia article
+
     >>> get_title('https://en.wikipedia.org/wiki/Rebecca_Sugar')
     'Rebecca Sugar'
     """
