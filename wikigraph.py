@@ -171,6 +171,10 @@ class WikiGraph:
         else:
             return False
 
+    def get_vertex(self, name) -> _Vertex:
+        """Returns the vertex based on the given key"""
+        return self._vertices[name]
+
     def get_class_id(self, name) -> str:
         """Returns the class id of a vertex"""
         return self._vertices[name].class_id
