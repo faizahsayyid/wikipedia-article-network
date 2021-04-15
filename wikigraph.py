@@ -48,9 +48,28 @@ class _Vertex:
         """Return the degree of this vertex."""
         return len(self.neighbours)
 
+    def check_connected(self, target_item: Any, visited: set[_Vertex]) -> bool:
+        """ Return whether this vertex is connected to a vertex corresponding to target_item
+        by a path that DOES NOT use any vertex in visited
+
+        Precondition:
+            - self not in visited
+        """
+        if self.name == target_item:
+            return True
+        else:
+            new_visited = visited.union({self})
+            return any(u.check_connected(target_item, new_visited)
+                       for u in self.neighbours
+                       if u not in visited)
+
 
 class WikiGraph:
     """A graph used to represent a Wikipedia pages network.
+
+    Each vertex in the graph represents a Wikipedia page, and an edge exist between
+    two vertices v1 and v2 if and only if v1 contains a link to v2 or v2 contains a link
+    to v1.
     """
     # Private Instance Attributes:
     #     - _vertices:
@@ -102,7 +121,8 @@ class WikiGraph:
     def get_neighbours(self, name: Any) -> set:
         """Return a set of the neighbours of the given page name.
 
-        Note that the page *names* are returned, not the _Vertex objects themselves.
+        Note that the page *names* (aka the titles of the webpages) are returned,
+        not the _Vertex objects themselves.
 
         Raise a ValueError if page name does not appear as a vertex in this graph.
         """
@@ -117,9 +137,31 @@ class WikiGraph:
         """
         return set(self._vertices.keys())
 
-    def is_vertex_in_graph(self, name) -> bool:
-        """Return whether <name> is a vertex in this graph"""
+    def is_vertex_in_graph(self, name: str) -> bool:
+        """Return whether <name> is a vertex in this graph
+
+        >>> g = WikiGraph()
+        >>> g.add_vertex('Rebecca Sugar', 'https://en.wikipedia.org/wiki/Rebecca_Sugar')
+        >>> g.is_vertex_in_graph('Rebecca Sugar')
+        True
+        >>> g.is_vertex_in_graph('Noelle Stevenson')
+        False
+        """
         return name in self._vertices
+
+    def connected(self, item1: Any, item2: Any) -> bool:
+        """Return whether item1 and item2 are connected vertices
+        in this graph.
+
+        Return False if item1 or item2 do not appear as vertices
+        in this graph.
+        """
+        if item1 in self._vertices and item2 in self._vertices:
+            v1 = self._vertices[item1]
+
+            return v1.check_connected(item2, set())
+        else:
+            return False
 
     def get_vertex(self, name) -> _Vertex:
         """Returns the vertex based on the given key"""
