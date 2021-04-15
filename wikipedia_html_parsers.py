@@ -73,11 +73,12 @@ class _WikipediaArticleParser(HTMLParser):
         if tag == "a":
             for attribute in attrs:
                 name, link = attribute
-
                 unwanted_page = any((unwanted in link) for unwanted in UNWANTED)
 
                 if name == "href" and link.startswith('/wiki/') and not unwanted_page:
-                    self.articles.append('https://en.wikipedia.org' + link)
+                    link = 'https://en.wikipedia.org' + link
+                    if link not in self.articles:
+                        self.articles.append(link)
         # else:
         #     if tag == "a" and len(self.articles) < self.sources_wanted:
         #         for attribute in attrs:
@@ -172,7 +173,8 @@ def get_adjacent_urls(url: str) -> list[str]:
         return []
 
 
-def get_adjacent_urls_weighted(url: str) -> dict[tuple[str, str], float]:
+# list[tuple[tuple[str, str], float]]
+def get_adjacent_urls_weighted(url: str) -> list:
     """Return a List of all adjacent urls in strings to the input url."""
 
     try:
@@ -183,19 +185,17 @@ def get_adjacent_urls_weighted(url: str) -> dict[tuple[str, str], float]:
         parser = _WikipediaArticleParser()
         parser.feed(html)
 
-        url_name = get_title(url)
         neighbours_to_weights = {}
 
         for article_link in parser.articles:
             article_name = get_title(article_link)
             weight1 = html.count(article_name)
-            weight2 = _count_appearances_in_article(article_link, url_name)
-            neighbours_to_weights[(article_link, article_name)] = (weight1 + weight2) / 2
+            neighbours_to_weights[(article_link, article_name)] = weight1
 
-        return neighbours_to_weights
+        return sorted(list(neighbours_to_weights.items()), key=lambda item: item[1], reverse=True)
 
     except urllib.error.HTTPError:
-        return {}
+        return []
 
 
 def _count_appearances_in_article(url: str, article_name: str) -> int:

@@ -171,6 +171,8 @@ def build_weighted_wikigraph(starting_url: str, num_sources: int,
     # sure we don't enter an infinite loop
     visited = []
 
+    edges_to_weights = {}
+
     # ACCUMULATOR wiki_graph_so_far builds up our wikigraph
     wiki_graph_so_far = WeightedWikiGraph()
 
@@ -192,7 +194,7 @@ def build_weighted_wikigraph(starting_url: str, num_sources: int,
         curr_name = get_title(curr_url)
 
         # find the neighbouring links on the article for curr_url
-        neighbours_keys = list(get_adjacent_urls_weighted(curr_url))
+        neighbours = get_adjacent_urls_weighted(curr_url)
 
         # Reset the counter the following while loop
         i = 0
@@ -200,22 +202,31 @@ def build_weighted_wikigraph(starting_url: str, num_sources: int,
 
         # stop loop either when we've added all the neighbours or curr_url
         # or we found our desired number of sources
-        while not (i >= len(neighbours_keys) or sources_found >= num_sources or
+        while not (i >= len(neighbours) or sources_found >= num_sources or
                    sources_found_per_page >= sources_per_page):
-            v = neighbours_keys[i][1]
-            v_name = neighbours_keys[i][0]
+            v, partial_weight = neighbours[i]
+            v_link, v_name = v
             i += 1
 
             # if the neighbour is not in visited, add it to the graph
-            if v not in visited:
-                q.enqueue(v)
-                visited.append(v)
+            if v_link not in visited:
+                q.enqueue(v_link)
+                visited.append(v_link)
 
                 if not wiki_graph_so_far.is_vertex_in_graph(v_name):
-                    wiki_graph_so_far.add_vertex(v_name, v)
+                    wiki_graph_so_far.add_vertex(v_name, v_link)
                     sources_found_per_page += 1
                     sources_found += 1
 
-            wiki_graph_so_far.add_edge(curr_name, v_name)
+            # wiki_graph_so_far.add_edge(curr_name, v_name, neighbours[neighbours_keys[i]])
+            if (v_name, curr_name) in edges_to_weights:
+                edges_to_weights[(v_name, curr_name)].append(partial_weight)
+            else:
+                edges_to_weights[(curr_name, v_name)] = [partial_weight]
+
+    for edge in edges_to_weights:
+        v1, v2 = edge
+        weight = sum(edges_to_weights[edge]) / 2
+        wiki_graph_so_far.add_edge(v1, v2, weight)
 
     return wiki_graph_so_far

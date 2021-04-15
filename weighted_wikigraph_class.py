@@ -81,7 +81,7 @@ class WeightedWikiGraph(WikiGraph):
         if name not in self._vertices:
             self._vertices[name] = _WeightedVertex(name, url)
 
-    def add_edge(self, name1: Any, name2: Any, weight: int = 0) -> None:
+    def add_edge(self, name1: Any, name2: Any, weight: float = 1.0) -> None:
         """Add an edge between the two vertices with the given items in this graph,
         with the given weight.
 
@@ -99,6 +99,19 @@ class WeightedWikiGraph(WikiGraph):
             v2.neighbours[v1] = weight
         else:
             # We didn't find an existing vertex for both items.
+            raise ValueError
+
+    def get_neighbours(self, name: Any) -> set:
+        """Return a set of the neighbours of the given page name.
+
+        Note that the page *names* are returned, not the _Vertex objects themselves.
+
+        Raise a ValueError if page name does not appear as a vertex in this graph.
+        """
+        if name in self._vertices:
+            v = self._vertices[name]
+            return {(neighbour.name, v.neighbours[neighbour]) for neighbour in v.neighbours}
+        else:
             raise ValueError
 
 
