@@ -12,7 +12,7 @@ This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtn
 """
 from __future__ import annotations
 from typing import Any
-from wikigraph_copy import WikiGraph
+from wikigraph import WikiGraph
 
 
 class _WeightedVertex:

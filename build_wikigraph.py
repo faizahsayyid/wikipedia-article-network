@@ -16,7 +16,7 @@ prohibited.
 This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtney Amm.
 """
 from typing import Any, Optional
-from wikigraph_copy import WikiGraph
+from wikigraph import WikiGraph
 from wikipedia_html_parsers import get_adjacent_urls, get_title
 
 

@@ -12,7 +12,6 @@ This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtn
 """
 from __future__ import annotations
 from typing import Any
-import networkx as nx
 
 
 class _Vertex:
@@ -23,6 +22,7 @@ class _Vertex:
     Instance Attributes:
         - name: The data stored in this vertex.
         - url: The URL of this webpage.
+        - class_id: A numeric representation of the vertex name to be used as an id for node styling
         - neighbours: The vertices that are adjacent to this vertex.
 
     Representation Invariants:
@@ -31,6 +31,7 @@ class _Vertex:
     """
     name: str
     url: str
+    class_id: str
     neighbours: set[_Vertex]
 
     def __init__(self, name: str, url: str) -> None:
@@ -40,6 +41,7 @@ class _Vertex:
         """
         self.name = name
         self.url = url
+        self.class_id = ''.join([str(ord(letter)) for letter in name])
         self.neighbours = set()
 
     def degree(self) -> int:
@@ -115,60 +117,55 @@ class WikiGraph:
         """
         return set(self._vertices.keys())
 
-    def to_networkx(self, max_vertices: int = 5000) -> nx.Graph:
-        """Convert this graph into a networkx Graph.
+    def is_vertex_in_graph(self, name) -> bool:
+        """Return whether <name> is a vertex in this graph"""
+        return name in self._vertices
 
-        max_vertices specifies the maximum number of vertices that can appear in the graph.
-        (This is necessary to limit the visualization output for large graphs.)
+    def get_vertex(self, name) -> _Vertex:
+        """Returns the vertex based on the given key"""
+        return self._vertices[name]
 
-        Note that this method is provided for you, and you shouldn't change it.
-        """
-        graph_nx = nx.Graph()
-        for v in self._vertices.values():
-            graph_nx.add_node(v.name)
-
-            for u in v.neighbours:
-                if graph_nx.number_of_nodes() < max_vertices:
-                    graph_nx.add_node(u.name)
-
-                if u.name in graph_nx.nodes:
-                    graph_nx.add_edge(v.name, u.name)
-
-            if graph_nx.number_of_nodes() >= max_vertices:
-                break
-
-        return graph_nx
+    def get_class_id(self, name) -> str:
+        """Returns the class id of a vertex"""
+        return self._vertices[name].class_id
 
     def to_cytoscape(self) -> list[dict]:
-        """Returns the list of graph data needed to display the graph in cytoscape"""
+        """Returns the list of graph data needed to display the graph in cytoscape.
+
+        Each node is represented as a dictionary, with the node's data containing an identifying
+        id and label and it's classes containing it's class_id for custom styling in the graph.
+
+        Each edge is also a dictionary, containing the source of the edge, target of the edge, and
+        the label of the edge.
+        """
         cyto_elements = []
+
+        # Iterate through every vertex in the graph
         for vertex in self._vertices:
-            cyto_elements.append({'data': {'id': vertex.url, 'name': vertex.name}})
-            for neighbour in vertex.neighbours:
-                cyto_elements.append({'data': {'source': vertex.url, 'target': neighbour.url,
-                                               'label': vertex.name + ' to ' + neighbour.name}})
+
+            # Add the vertex to the graph
+            cyto_elements.append({'data': {'id': self._vertices[vertex].url,
+                                           'label': self._vertices[vertex].name},
+                                  'classes': self._vertices[vertex].class_id})
+
+            # Add all of the vertex's edges
+            for neighbour in self._vertices[vertex].neighbours:
+                cyto_elements.append({'data': {'source': self._vertices[vertex].url,
+                                               'target': neighbour.url,
+                                               'label': self._vertices[vertex].name + ' to ' +
+                                                        neighbour.name}})
         return cyto_elements
 
 
-# if __name__ == '__main__':
-    # You can uncomment the following lines for code checking/debugging purposes.
-    # However, we recommend commenting out these lines when working with the large
-    # datasets, as checking representation invariants and preconditions greatly
-    # increases the running time of the functions/methods.
-    # import python_ta.contracts
+if __name__ == '__main__':
+    import python_ta.contracts
 
-    # python_ta.contracts.check_all_contracts()
+    python_ta.contracts.check_all_contracts()
 
-    # import doctest
-    #
-    # doctest.testmod()
-    #
-    # import python_ta
-    #
-    # python_ta.check_all(config={
-    #     'max-line-length': 100,
-    #     'disable': ['E1136'],
-    #     'extra-imports': ['csv', 'networkx'],
-    #     'allowed-io': ['load_review_graph'],
-    #     'max-nested-blocks': 4
-    # })
+    import python_ta
+
+    python_ta.check_all(config={
+        'max-line-length': 100,
+        'disable': ['E1136', 'E9999'],
+        'max-nested-blocks': 4
+    })

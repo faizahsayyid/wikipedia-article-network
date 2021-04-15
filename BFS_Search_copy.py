@@ -4,7 +4,7 @@ BFS Stuffs
 """
 
 #from lectures.week08.lec16_exercises import Graph
-from wikigraph_copy import WikiGraph
+from wikigraph import WikiGraph
 from typing import Any, Optional
 import urllib.request
 from html.parser import HTMLParser
