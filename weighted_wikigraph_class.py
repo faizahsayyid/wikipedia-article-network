@@ -1,9 +1,22 @@
-"""CSC111 Winter 2021 Final Project: Wikipedia Graph Class
+"""CSC111 Winter 2021 Final Project: Weighted Wikipedia Graph Class
+
 Module Description
 ===============================
-[INSERT MODULE DESCRIPTION]
+
+This module contains the WeightedWikiGraph class, which is graph used to represent a
+network of wikipedia articles.
+
+Each vertex in the graph represents a Wikipedia page, and an edge exist between
+two vertices v1 and v2 if and only if v1 contains a link to v2 or v2 contains a link
+to v1.
+
+Each edge {v1, v2} contains a weight based on the average between the number of times
+v1.name appears in the html code of v2 and the number of times v2.name appears in the
+html code of v1.
+
 Copyright and Usage Information
 ===============================
+
 This file is provided solely for the personal and private use of Faizah Sayyid, Tina Zhang,
 Poorvi Sharma, and Courtney Amm (students at the University of Toronto St. George campus).
 All forms of distribution of this code, whether as given or with any changes, are expressly
@@ -12,21 +25,20 @@ This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtn
 """
 from __future__ import annotations
 from typing import Any
+
 from wikigraph import WikiGraph
 
 
 class _WeightedVertex:
     """A vertex in a weighted Wikipedia link graph, used to represent a Wikipedia page.
 
-    Same documentation as _Vertex from Part 1, except now neighbours is a dictionary mapping
-    a neighbour vertex to the weight of the edge to from self to that neighbour.
-
-    A weight between 2 vertices is the average of the frequency of the names in each webpage.
+    Each edge {v1, v2} contains a weight based on the average between the number of times
+    v1.name appears in the html code of v2 and the number of times v2.name appears in the
+    html code of v1.
 
     Instance Attributes:
         - name: The data stored in this vertex.
         - url: The URL of this webpage.
-        - class_id: A numeric representation of the vertex name to be used as an id for node styling
         - neighbours: The vertices that are adjacent to this vertex, and their corresponding
             edge weights.
 
@@ -36,7 +48,6 @@ class _WeightedVertex:
     """
     name: Any
     url: str
-    class_id: str
     neighbours: dict[_WeightedVertex, int]
 
     def __init__(self, name: str, url: str) -> None:
@@ -46,7 +57,6 @@ class _WeightedVertex:
         """
         self.name = name
         self.url = url
-        self.class_id = ''.join([str(ord(letter)) for letter in name])
         self.neighbours = {}
 
     def degree(self) -> int:
@@ -57,6 +67,14 @@ class _WeightedVertex:
 class WeightedWikiGraph(WikiGraph):
     """A weighted graph used to represent a Wikipedia link network that keeps track of
     weights.
+
+    Each vertex in the graph represents a Wikipedia page, and an edge exist between
+    two vertices v1 and v2 if and only if v1 contains a link to v2 or v2 contains a link
+    to v1.
+
+    Each edge {v1, v2} contains a weight based on the average between the number of times
+    v1.name appears in the html code of v2 and the number of times v2.name appears in the
+    html code of v1
 
     Note that this is a subclass of the WikiGraph class, and so inherits any methods
     from that class that aren't overridden here.
@@ -118,6 +136,15 @@ class WeightedWikiGraph(WikiGraph):
 
 
 if __name__ == '__main__':
-    import doctest
+    import python_ta.contracts
 
-    doctest.testmod()
+    python_ta.contracts.check_all_contracts()
+
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['wikigraph'],
+        'allowed-io': [],
+        'max-line-length': 100,
+        'disable': ['E1136', 'W0221']
+    })

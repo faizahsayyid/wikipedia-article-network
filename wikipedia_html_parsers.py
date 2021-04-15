@@ -22,8 +22,7 @@ from html.parser import HTMLParser
 
 UNWANTED = ['Special:', 'Help:', 'Wikipedia', 'Category:', 'Portal:', 'Book:', '.jpg',
             '.svg', '.png', '.JPG', '.PNG', '.SVG', 'File:', 'Talk:', '(disambiguation)'
-                                                                      'Module talk:', 'User:', ':',
-            '(disambiguation)', 'Main_Page']
+            'Module talk:', 'User:', ':', '(disambiguation)', 'Main_Page']
 
 
 class WikipediaArticleParser(HTMLParser):
@@ -187,42 +186,6 @@ class WikipediaSummaryParser(HTMLParser):
             self.summary = '.'.join(sentences[:2]) + '.'
 
 
-class _WikipediaImageParser(HTMLParser):
-    _found_image: bool
-    image: str
-
-    def __init__(self) -> None:
-        """Initialize a new article parser.
-
-        This article parser is initialized an empty list of articles.
-        """
-        super().__init__()
-        self.reset()
-        self._found_image = False
-        self.image = ''
-
-    def error(self, message) -> None:
-        """Help on function error in module _markupbase
-
-        (This method needed to be implemented for the abstract super class HTMLParser,
-         but doesn't do anything)
-        """
-        pass
-
-    def handle_starttag(self, tag: str, attrs: tuple) -> None:
-        """This find the first image tag that is larger than a certain size
-        (to avoid thumbnails) and returns it"""
-        if tag == 'img' and self.image == '':
-            for attrib in attrs:
-                if attrib[0] == 'height' and int(attrib[1]) > 50:
-                    self._found_image = True
-                    break
-            if self._found_image is True:
-                for attrib in attrs:
-                    if attrib[0] == 'src':
-                        self.image = attrib[1]
-
-
 def get_adjacent_urls(url: str) -> list[str]:
     """Return a list of all wikipedia pages that are adjacent to <url>"""
     try:
@@ -298,21 +261,9 @@ def get_title(url: str) -> str:
     return title.replace('_', ' ')
 
 
-def get_image(url: str):
-    """Returns the first image on the wikipedia page"""
-    data_to_parse = urllib.request.urlopen(url)
-    html = data_to_parse.read().decode()
-    data_to_parse.close()
-
-    parser = _WikipediaImageParser()
-    parser.feed(html)
-
-    return parser.image
-
-
 if __name__ == '__main__':
-    import doctest
 
+    import doctest
     doctest.testmod()
 
     import python_ta.contracts
