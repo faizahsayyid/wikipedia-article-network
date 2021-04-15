@@ -25,8 +25,8 @@ import build_wikigraph_weighted
 import wikipedia_html_parsers
 import make_txt_file
 
-# import os
-# import flask
+import os
+import flask
 
 cyto.load_extra_layouts()
 
@@ -58,12 +58,11 @@ app.layout = html.Div(children=[
                 id='wiki_num_sources_input',
                 placeholder='Enter a number',
                 type='text',
-                value=20
+                value=30
             ),
 
             html.H5(
-                "Input the number of sources per page you want to generate here! "
-                "(Leave this as 0 if you don't want to specify this value)"),
+                "Input the number of sources per page you want to generate here!"),
             dcc.Input(
                 id='wiki_num_sources_per_page_input',
                 placeholder='Enter a number',
@@ -76,7 +75,7 @@ app.layout = html.Div(children=[
                                {'label': 'Background Images on (Slower)', 'value': 'on'},
                                {'label': 'Background Images off (Faster)', 'value': 'off'}
                            ],
-                           value='on',
+                           value='off',
                            style={
                                'padding-top': '1em'
                            }
@@ -100,9 +99,9 @@ app.layout = html.Div(children=[
                             style={
                                 'text-align': 'left'
                             }),
-                dcc.Loading(id="loading-1",
+                dcc.Loading(id="loading_graph",
                             type="circle",
-                            children=html.Div(id="loading-output-1"),
+                            children=html.Div(id="loading_graph_output"),
                             style={
                                 'text-justify': 'right',
                                 'padding-bottom': '2em'
@@ -112,24 +111,43 @@ app.layout = html.Div(children=[
                     'padding-top': '1.5em'
                 }
             ),
-            html.Button(id='generate_txt_file', n_clicks=0,
-                        children='Press to download a txt file '
-                                 'of all nodes in the graph!'),
-            html.Div(id='txt_download_area')],
+            # html.Button(id='generate_txt_file', n_clicks=0,
+            #             children='Press to download a txt file '
+            #                      'of all nodes in the graph!'),
+            html.Div(children=[
+                html.A(id='txt_download_area',
+                       children="A text file of all nodes in the graph will generate here",
+                       style={
+                           'background-color': '#EEEEEE',
+                           'color': '#333333',
+                           'border': '2px solid #CCCCCC'
+                       }),
+                dcc.Loading(id="loading_file",
+                            type="circle",
+                            children=html.Div(id="loading_file_output"),
+                            style={
+                                'text-justify': 'right',
+                                'padding-left': '15em',
+                                'padding-bottom': '1em'
+                            })
+            ],
+                style={
+                    'padding-bottom': '2em'
+                })
+        ],
         style={
             'width': '27%',
             'float': 'left',
-            'border-style': 'solid',
             'padding': '.5em .5em .5em .5em',
-            'margin-top': '4em'
-        }
-    ),
+            'border-style': 'solid',
+            'margin-top': '4em',
+        }),
 
     html.Div(children=[html.H6('Generated Graph:'),
                        cyto.Cytoscape(
                            id='cytoscape_wiki_graph',
                            layout={
-                               'name': 'cose',
+                               'name': 'dagre',
                                'padding': '50',
                                'avoidOverlap': 'true'
                            },
@@ -172,7 +190,6 @@ app.layout = html.Div(children=[
              })
 ],
     style={
-        'background-color': '#191308',
         'opacity': '1'
     }
 )
@@ -183,15 +200,14 @@ app.layout = html.Div(children=[
 @app.callback(
     Output('cytoscape_wiki_graph', 'elements'),
     Output('cytoscape_wiki_graph', 'stylesheet'),
-    Output("loading-output-1", "children"),
+    Output("loading_graph_output", "children"),
     Input('update_graph_button', 'n_clicks'),
     State('images_selection', 'value'),
     State('graph_type_selection', 'value'),
     State('wiki_url_input', 'value'),
     State('wiki_num_sources_input', 'value'),
     State('wiki_num_sources_per_page_input', 'value'),
-    State('cytoscape_wiki_graph', 'stylesheet')
-)
+    State('cytoscape_wiki_graph', 'stylesheet'))
 def update_cytoscape_display(n_clicks, images, weighting, url, num_sources, sources_per_page,
                              style_sheet) -> (list[dict], list[dict], None):
     """This function builds the cytoscape graph and transforms that graph in to the correct
@@ -281,15 +297,17 @@ def display_name_summary_link_infobox(data) -> (str, str, str):
 
 @app.callback(
     Output('txt_download_area', 'children'),
-    Input('generate_txt_file', 'n_clicks'),
-    State('cytoscape_wiki_graph', 'elements'),
+    Output('txt_download_area', 'download'),
+    Output('txt_download_area', 'href'),
+    Output('loading_file_output', 'children'),
+    Input('cytoscape_wiki_graph', 'elements'),
     State('wiki_url_input', 'value'),
     State('wiki_num_sources_input', 'value'),
     State('wiki_num_sources_per_page_input', 'value')
 )
-def create_txt_download(n_clicks, graph_elements, url, num_s, num_s_per_page) -> str:
+def create_txt_download(graph_elements, url, num_s, num_s_per_page) -> str:
     """This function builds and downloads a text file of all elements in the graph for the user"""
-    if n_clicks > -1 and graph_elements is not None:
+    if graph_elements is not None:
         title = url.replace('https://en.wikipedia.org/wiki/', '')
         filename = f"{title}.txt"
         path = f"txt_file_downloads/{filename}"
@@ -297,16 +315,18 @@ def create_txt_download(n_clicks, graph_elements, url, num_s, num_s_per_page) ->
                                                         title, num_s, num_s_per_page)
         with open(path, "wb") as file:
             file.write(graph_text)
-        return ""
+        return ("Click here to download: " + filename, "", "/" + path, None)
+    else:
+        return ("", "", "", None)
 
 
-#
-# @app.server.route('/txt_file_downloads/<path>')
-# def serve_static(path):
-#     root_dir = os.getcwd()
-#     return flask.send_from_directory(
-#         os.path.join(root_dir, 'txt_file_downloads'), path
-#     )
+@app.server.route('/txt_file_downloads/<path>')
+def get_download_directory(path) -> None:
+    root_dir = os.getcwd()
+    print(root_dir)
+    return flask.send_from_directory(
+        os.path.join(root_dir, 'txt_file_downloads'), path
+    )
 
 
 if __name__ == '__main__':
