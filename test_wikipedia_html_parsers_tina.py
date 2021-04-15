@@ -24,7 +24,8 @@ import wikipedia_html_parsers
 # ==================================================================================================
 
 def test_get_adjacent_url() -> None:
-    """ ... """
+    """ Test get_adjacent_url for getting the correct number of adjacent urls
+    """
     expected = {'https://en.wikipedia.org/wiki/Thoroughbred',
                 'https://en.wikipedia.org/wiki/Leading_sire_in_Great_Britain_and_Ireland',
                 'https://en.wikipedia.org/wiki/Francis_Godolphin,_2nd_Earl_of_Godolphin',
@@ -50,56 +51,81 @@ def test_get_adjacent_url() -> None:
 
 
 def test_get_adjacent_url_weighted() -> None:
-    """ ... """
-    expected = {(('https://en.wikipedia.org/wiki/Thoroughbred',
-                  'Thoroughbred'), 1),
-                (('https://en.wikipedia.org/wiki/Leading_sire_in_Great_Britain_and_Ireland',
-                  'Leading sire in Great Britain and Ireland'), 9),
+    """ Test get_adjacent_url_weighted for getting the correct number of adjacent urls weighted
+    """
+    expected = [(('https://en.wikipedia.org/wiki/Thoroughbred',
+                  'Thoroughbred'), 10),
+                (('https://en.wikipedia.org/wiki/Godolphin_Arabian',
+                  'Godolphin Arabian'), 7),
+                (('https://en.wikipedia.org/wiki/Kingdom_of_Great_Britain',
+                  'Kingdom of Great Britain'), 7),
                 (('https://en.wikipedia.org/wiki/Francis_Godolphin,_2nd_Earl_of_Godolphin',
-                  'Francis Godolphin, 2nd Earl of Godolphin'), 3),
+                  'Francis Godolphin, 2nd Earl of Godolphin'), 6),
+                (('https://en.wikipedia.org/wiki/Bald_Galloway',
+                  'Bald Galloway'), 4),
+                (('https://en.wikipedia.org/wiki/Leading_sire_in_Great_Britain_and_Ireland',
+                  'Leading sire in Great Britain and Ireland'), 4),
+                (('https://en.wikipedia.org/wiki/Matchem',
+                  'Matchem'), 4),
+                (('https://en.wikipedia.org/wiki/Alysheba',
+                  'Alysheba'), 3),
+                (('https://en.wikipedia.org/wiki/Potoooooooo',
+                  'Potoooooooo'), 3),
+                (('https://en.wikipedia.org/wiki/Mambrino_(horse)',
+                  'Mambrino (horse)'), 2),
+                (('https://en.wikipedia.org/wiki/Stallion_(horse)', 'Stallion (horse)'), 1),
                 (('https://en.wikipedia.org/wiki/Foundation_bloodstock',
                   'Foundation bloodstock'), 1),
-                (('https://en.wikipedia.org/wiki/Godolphin_Arabian',
-                  'Godolphin Arabian'), 3),
-                (('https://en.wikipedia.org/wiki/Bald_Galloway',
-                  'Bald Galloway'), 3),
-
-                (('https://en.wikipedia.org/wiki/Stallion_(horse)', 'Stallion (horse)'), 1),
-                (('https://en.wikipedia.org/wiki/Kingdom_of_Great_Britain',
-                  'Kingdom of Great Britain'), 1),
-
                 (('https://en.wikipedia.org/wiki/Lath_(horse)',
-                  'Lath (horse)'), 2),
+                  'Lath (horse)'), 1),
                 (('https://en.wikipedia.org/wiki/Guinea_(British_coin)',
-                  'Guinea (British_coin)'), 1),
-
-                (('https://en.wikipedia.org/wiki/Leading_sire_in_Great_Britain_%26_Ireland',
-                  'Leading sire in Great Britain %26 Ireland'), 0),
-
-                (('https://en.wikipedia.org/wiki/Mambrino_(horse)',
-                  'Mambrino (horse)'), 3),
-                (('https://en.wikipedia.org/wiki/Alysheba',
-                  'Alysheba'), 1),
+                  'Guinea (British coin)'), 1),
                 (('https://en.wikipedia.org/wiki/Boston_(horse)',
                   'Boston (horse)'), 1),
-                (('https://en.wikipedia.org/wiki/Matchem',
-                  'Matchem'), 1),
-                (('https://en.wikipedia.org/wiki/Potoooooooo',
-                  'Potoooooooo'), 2)
-                }
-    actual = set(wikipedia_html_parsers.get_adjacent_urls_weighted
-                 ('https://en.wikipedia.org/wiki/Cade_(horse)'))
+                (('https://en.wikipedia.org/wiki/Leading_sire_in_Great_Britain_%26_Ireland',
+                  'Leading sire in Great Britain %26 Ireland'), 0)
+                ]
+    actual = wikipedia_html_parsers.get_adjacent_urls_weighted(
+        'https://en.wikipedia.org/wiki/Cade_(horse)')
 
     assert expected == actual
 
 
 def test_get_summary() -> None:
-    """ ... """
+    """ Test get_summary for getting exactly two lines of summary (the default)
+    """
     expected = 'Cade (1734–1756) was an important foundation sire of Thoroughbred racehorses. ' \
                'He was the Leading sire in Great Britain and Ireland in 1752, 1753, 1758, 1759 ' \
                'and 1760.'
 
     actual = wikipedia_html_parsers.get_summary('https://en.wikipedia.org/wiki/Cade_(horse)')
+
+    assert expected == actual
+
+
+def test_get_summary_sentence_wanted_four() -> None:
+    """ Test get_summary for getting exactly four lines of summary
+    """
+    expected = 'Cade (1734–1756) was an important foundation sire of Thoroughbred racehorses. ' \
+               'He was the Leading sire in Great Britain and Ireland in 1752, 1753, 1758, 1759 ' \
+               'and 1760.\n' + 'Bred by Francis Godolphin, 2nd Earl of Godolphin, he was by ' \
+                               'the Thoroughbred foundation sire, the Godolphin Arabian. Out' \
+                               ' of Roxana (1718) (by Bald Galloway), he was a full-brother ' \
+                               'to the first son of the Goldophin Arabian, Lath (1732 bay colt).'
+
+    actual = wikipedia_html_parsers.get_summary(
+        'https://en.wikipedia.org/wiki/Cade_(horse)', 4)
+
+    assert expected == actual
+
+
+def test_get_summary_sentence_wanted() -> None:
+    """ Test get_summary for getting exactly one line of summary
+    """
+    expected = 'Cade (1734–1756) was an important foundation sire of Thoroughbred racehorses.'
+
+    actual = wikipedia_html_parsers.get_summary(
+        'https://en.wikipedia.org/wiki/Cade_(horse)', 1)
 
     assert expected == actual
 
