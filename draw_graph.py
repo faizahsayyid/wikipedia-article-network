@@ -24,8 +24,9 @@ from dash.dependencies import Input, Output, State
 import build_wikigraph
 import wikipedia_html_parsers
 import make_txt_file
-#import os
-#import flask
+
+# import os
+# import flask
 
 cyto.load_extra_layouts()
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -61,12 +62,25 @@ app.layout = html.Div(children=[
                 value=5
             ),
 
-            html.Div(children=[html.Button(id='update_graph_button', n_clicks=0,
-                                           children='Press to update graph!')],
-                     style={
-                         'padding-top': '15px',
-                         'padding-bottom': '30px'
-                     }),
+            html.Div(children=[
+                html.Button(id='update_graph_button', n_clicks=0,
+                            children='Press to update graph!',
+                            style={
+                                'text-align': 'left'
+                            }),
+                dcc.Loading(id="loading-1",
+                            type="circle",
+                            children=html.Div(id="loading-output-1"),
+                            style={
+                                'text-justify': 'right',
+                                'padding-left': '8em',
+                                'padding-bottom': '2em'
+                            })],
+                style={
+                    'padding-bottom': '2em',
+                    'padding-top': '2em'
+                }
+            ),
             html.Button(id='generate_txt_file', n_clicks=0,
                         children='Press to download a txt file '
                                  'of all nodes in the graph!'),
@@ -115,6 +129,7 @@ app.layout = html.Div(children=[
 @app.callback(
     Output('cytoscape_wiki_graph', 'elements'),
     Output('cytoscape_wiki_graph', 'stylesheet'),
+    Output("loading-output-1", "children"),
     Input('update_graph_button', 'n_clicks'),
     State('wiki_url_input', 'value'),
     State('wiki_num_sources_input', 'value'),
@@ -137,7 +152,8 @@ def update_cytoscape_display(n_clicks, url, num_sources, sources_per_page):
             'text-border-color': '#242F40',
             'text-border-width': '2px',
             'text-border-style': 'solid',
-            'color': '#03254E'
+            'color': '#03254E',
+            'text-wrap': 'wrap'
         }
     }
     ]
@@ -148,13 +164,13 @@ def update_cytoscape_display(n_clicks, url, num_sources, sources_per_page):
         new_graph = build_wikigraph.build_wikigraph(url, int(num_sources), int(sources_per_page))
     graph_elements = new_graph.to_cytoscape()
     for vertex in new_graph.get_all_vertices():
-        temp_width = len(vertex) + 1
+        temp_width = len(vertex)
         if new_graph.get_vertex(vertex).url == url:
-            temp_width += 15
+            temp_width += 20
             temp_height = temp_width
         else:
-            temp_height = int(temp_width * .3)
-        temp_font_size = max(int(temp_width * .025) + int(temp_height * .1), 1)
+            temp_height = int(temp_width * .5)
+        temp_font_size = max(int(temp_width * .025) + int(temp_height * .05), 1)
 
         # if new_graph.get_vertex(vertex).url == url:
         #     style_sheet.append({
@@ -172,6 +188,7 @@ def update_cytoscape_display(n_clicks, url, num_sources, sources_per_page):
                 'style': {
                     'height': str(temp_height) + 'em',
                     'width': str(temp_width) + 'em',
+                    'text-max-width': str(temp_width - 2) + 'em',
                     'label': vertex,
                     'font-size': str(temp_font_size) + 'em'
                 }
@@ -182,13 +199,14 @@ def update_cytoscape_display(n_clicks, url, num_sources, sources_per_page):
                 'style': {
                     'height': str(temp_height) + 'em',
                     'width': str(temp_width) + 'em',
+                    'text-max-width': str(temp_width - 2) + 'em',
                     'label': vertex,
                     'font-size': str(temp_font_size) + 'em',
                     'background-fit': 'cover',
                     'background-image': new_graph.get_image(vertex)
                 }
             })
-    return graph_elements, style_sheet
+    return graph_elements, style_sheet, None
 
 
 @app.callback(Output('cytoscape_article', 'children'),
@@ -223,6 +241,7 @@ def create_txt_download(n_clicks, graph_elements, url, num_s, num_s_per_page):
         with open(path, "wb") as file:
             file.write(graph_text)
         return ""
+
 
 #
 # @app.server.route('/txt_file_downloads/<path>')
