@@ -43,8 +43,9 @@ class _WikipediaArticleParser(HTMLParser):
         - all('Book:' not in a for a in self.articles)
     """
     articles: list[str]
+    original_url: str
 
-    def __init__(self) -> None:
+    def __init__(self, original_url: str) -> None:
         """Initialize a new article parser.
 
         This article parser is initialized an empty list of articles.
@@ -52,6 +53,7 @@ class _WikipediaArticleParser(HTMLParser):
         super().__init__()
         self.articles = []
         self.reset()
+        self.original_url = original_url
 
     def error(self, message) -> None:
         """Help on function error in module _markupbase
@@ -73,7 +75,7 @@ class _WikipediaArticleParser(HTMLParser):
 
                 if name == "href" and link.startswith('/wiki/') and not unwanted_page:
                     link = 'https://en.wikipedia.org' + link
-                    if link not in self.articles:
+                    if link not in self.articles and link != self.original_url:
                         self.articles.append(link)
 
 
@@ -160,6 +162,12 @@ class _WikipediaSummaryParser(HTMLParser):
                     and not self.summary.endswith('.'):
                 index_of_last_period = self.summary.rindex('.')
                 self.summary = self.summary[:index_of_last_period + 1]
+            elif self.summary.count('.') > self.sentences_wanted:
+                sentences = self.summary.split('.')
+                self.summary = '.'.join(sentences[:2]) + '.'
+        elif self.summary.count('.') > self.sentences_wanted:
+            sentences = self.summary.split('.')
+            self.summary = '.'.join(sentences[:2]) + '.'
 
 
 def get_adjacent_urls(url: str) -> list[str]:
@@ -170,7 +178,7 @@ def get_adjacent_urls(url: str) -> list[str]:
         html = data_to_parse.read().decode()
         data_to_parse.close()
 
-        parser = _WikipediaArticleParser()
+        parser = _WikipediaArticleParser(url)
         parser.feed(html)
 
         return parser.articles
@@ -204,7 +212,7 @@ def get_adjacent_urls_weighted(url: str) -> list:
         return []
 
 
-def get_summary(url: str) -> str:
+def get_summary(url: str, sentences_wanted: int = 2) -> str:
     """Return the summary of the given wikipedia article
 
     Precondition
@@ -214,7 +222,7 @@ def get_summary(url: str) -> str:
     html = data_to_parse.read().decode()
     data_to_parse.close()
 
-    parser = _WikipediaSummaryParser()
+    parser = _WikipediaSummaryParser(sentences_wanted)
     parser.feed(html)
 
     return parser.summary

@@ -20,10 +20,6 @@ import wikipedia_html_parsers
 
 
 # ==================================================================================================
-# TEST BUILD_HTML_PARSERS
-# ==================================================================================================
-
-# ==================================================================================================
 # TEST _WikipediaArticleParser
 # ==================================================================================================
 
@@ -57,6 +53,15 @@ def test_wap_start_tag_not_unwanted_url() -> None:
     article_parser.handle_starttag('a', [('href', '/wiki/Help:Contents')])
 
     assert article_parser.articles == []
+
+
+def test_wap_start_tag_no_duplicates() -> None:
+    """..."""
+    article_parser = wikipedia_html_parsers._WikipediaArticleParser()
+    article_parser.handle_starttag('a', [('href', '/wiki/Rebecca_Sugar')])
+    article_parser.handle_starttag('a', [('href', '/wiki/Rebecca_Sugar')])
+
+    assert article_parser.articles == ['https://en.wikipedia.org/wiki/Rebecca_Sugar']
 
 
 # ==================================================================================================
@@ -112,7 +117,7 @@ def test_wsp_collects_strips_tail() -> None:
     """..."""
     summary_parser = wikipedia_html_parsers._WikipediaSummaryParser()
     summary_parser.handle_starttag('p', [])
-    summary_parser.handle_data('what is life. life is')
+    summary_parser.handle_data('what is life. life is ')
     summary_parser.handle_data('meaningless. meaningless is life.')
 
     assert summary_parser.summary == 'what is life. life is meaningless.'
