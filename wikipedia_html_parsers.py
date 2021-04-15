@@ -3,7 +3,8 @@
 Module Description
 ===============================
 
-[INSERT MODULE DESCRIPTION]
+This module contains functions and classes used to parse wikipedia article links and
+summaries from a specific wikipedia article.
 
 Copyright and Usage Information
 ===============================
@@ -24,23 +25,18 @@ UNWANTED = ['Special:', 'Help:', 'Wikipedia', 'Category:', 'Portal:', 'Book:', '
             'Module talk:', 'User:', ':', '(disambiguation)', 'Main_Page']
 
 
-class _WikipediaArticleParser(HTMLParser):
-    """An Wikipedia article parser, used to extract Wikipedia links from html code.
+class WikipediaArticleParser(HTMLParser):
+    """A Wikipedia article parser, used to extract Wikipedia links from html code.
 
-    This article parser does not include wikipedia links that contain 'Special:', 'Help:',
-    'Wikipedia:', 'Category:', 'Portal:', or 'Book:' in their url.
+    This article parser does not include wikipedia links that contain links from UNWANTED.
 
     Instance Attributes:
         - articles: a list of wikipedia links parsed from html code
 
     Representation Invariants:
         - all("https://en.wikipedia.org/wiki/" in a for a in self.articles)
-        - all('Special:' not in a for a in self.articles)
-        - all('Help:' not in a for a in self.articles)
-        - all('Wikipedia:' not in a for a in self.articles)
-        - all('Category:' not in a for a in self.articles)
-        - all('Portal:' not in a for a in self.articles)
-        - all('Book:' not in a for a in self.articles)
+        - all(all(k not in a for k in UNWANTED) for a in self.articles)
+        - all(self.articles.count(a) == 1 for a in self.articles)
     """
     articles: list[str]
     original_url: str
@@ -48,40 +44,60 @@ class _WikipediaArticleParser(HTMLParser):
     def __init__(self, original_url: str) -> None:
         """Initialize a new article parser.
 
-        This article parser is initialized an empty list of articles.
+        This article parser is initialized an empty list of articles and
+        the given <original_url>.
         """
         super().__init__()
         self.articles = []
         self.reset()
         self.original_url = original_url
 
-    def error(self, message) -> None:
+    def error(self, message: str) -> None:
         """Help on function error in module _markupbase
 
         (This method needed to be implemented for the abstract super class HTMLParser,
          but doesn't do anything)
         """
-        pass
 
     def handle_starttag(self, tag: str, attrs: list[tuple]) -> None:
         """Parse wikipedia links from html file.
         Add those wikipedia links to self.articles.
         """
-        # Only parse the 'anchor' tags.
+        # Only parse the <a> tags.
         if tag == "a":
             for attribute in attrs:
                 name, link = attribute
                 unwanted_page = any((unwanted in link) for unwanted in UNWANTED)
 
-                if name == "href" and link.startswith('/wiki/') and not unwanted_page:
-                    link = 'https://en.wikipedia.org' + link
-                    if link not in self.articles and link != self.original_url:
-                        self.articles.append(link)
+                self._add_article(name, link, unwanted_page)
+
+    def _add_article(self, name: str, link: str, unwanted_page: bool) -> None:
+        """Add <link> to self.articles if name is 'href' (meaning it is actually a link
+        and not different attribute), if <unwanted_page> is false, and if <link> is a
+        wikipedia article"""
+        if name == "href" and link.startswith('/wiki/') and not unwanted_page:
+            link = 'https://en.wikipedia.org' + link
+            if link not in self.articles and link != self.original_url:
+                self.articles.append(link)
 
 
-class _WikipediaSummaryParser(HTMLParser):
-    """An Wikipedia summary parser, used to extract the summary of a Wikipedia article
-    from the html code of the article."""
+class WikipediaSummaryParser(HTMLParser):
+    """A Wikipedia summary parser, used to extract the summary of a Wikipedia article
+    from the html code of the article.
+
+    Instance Attributes:
+        - summary: the summary of the article being parsed
+        - sentences_wanted: the number of sentences to parse
+
+    Representation Invariants:
+        - self.summary.count('.') <= self.sentences_wanted
+    """
+    # Private Instance Attributes:
+    #     - _found_p:
+    #         whether or not we are inside a <p> tag
+    #     - _skip_footnote:
+    #         whether or not we are inside a <sup> tag
+
     _found_p: bool
     summary: str
     sentences_wanted: int
@@ -99,19 +115,19 @@ class _WikipediaSummaryParser(HTMLParser):
         self._skip_footnote = False
         self.sentences_wanted = sentences_wanted
 
-    def error(self, message) -> None:
+    def error(self, message: str) -> None:
         """Help on function error in module _markupbase
 
         (This method needed to be implemented for the abstract super class HTMLParser,
          but doesn't do anything)
         """
-        pass
 
     def handle_starttag(self, tag: str, attrs: list[tuple]) -> None:
-        """Find the summary of the wikipedia article (update self._found_summary)
+        """Update self._found_p if tag is <p>
         Update self._skip_footnote whenever a footnote is encountered in the summary
+        (if tag is <sup>)
 
-        >>> summary_parser = _WikipediaSummaryParser()
+        >>> summary_parser = WikipediaSummaryParser()
         >>> summary_parser.handle_starttag('p', [])
         >>> summary_parser._found_p
         True
@@ -131,10 +147,10 @@ class _WikipediaSummaryParser(HTMLParser):
             self._skip_footnote = True
 
     def handle_endtag(self, tag: str) -> None:
-        """Update self._found_summary the end of the summary is reached
-        Update self._skip_footnote the end of a footnote is reached
+        """Update self._found_p if tag is <p>
+        Update self._skip_footnote the end of a footnote is reached (if tag is <sup>)
 
-        >>> summary_parser = _WikipediaSummaryParser()
+        >>> summary_parser = WikipediaSummaryParser()
         >>> summary_parser.handle_endtag('p')
         >>> summary_parser._found_p
         False
@@ -171,14 +187,13 @@ class _WikipediaSummaryParser(HTMLParser):
 
 
 def get_adjacent_urls(url: str) -> list[str]:
-    """Return a List of all adjacent urls in strings to the input url."""
-
+    """Return a list of all wikipedia pages that are adjacent to <url>"""
     try:
         data_to_parse = urllib.request.urlopen(url)
         html = data_to_parse.read().decode()
         data_to_parse.close()
 
-        parser = _WikipediaArticleParser(url)
+        parser = WikipediaArticleParser(url)
         parser.feed(html)
 
         return parser.articles
@@ -188,14 +203,16 @@ def get_adjacent_urls(url: str) -> list[str]:
 
 
 def get_adjacent_urls_weighted(url: str) -> list:
-    """Return a List of all adjacent urls in strings to the input url."""
+    """Return a list in where each element is in the format ((link, name) weight)
+    for each wikipedia page that is adjacent to <url>
+    """
 
     try:
         data_to_parse = urllib.request.urlopen(url)
         html = data_to_parse.read().decode()
         data_to_parse.close()
 
-        parser = _WikipediaArticleParser(url)
+        parser = WikipediaArticleParser(url)
         parser.feed(html)
 
         neighbours_to_weights = {}
@@ -206,14 +223,18 @@ def get_adjacent_urls_weighted(url: str) -> list:
                 weight1 = html.count(article_name)
                 neighbours_to_weights[(article_link, article_name)] = weight1
 
-        return sorted(list(neighbours_to_weights.items()), key=lambda item: item[1], reverse=True)
+        return sorted(list(neighbours_to_weights.items()),
+                      key=lambda item: item[1], reverse=True)
 
     except urllib.error.HTTPError:
         return []
 
 
 def get_summary(url: str, sentences_wanted: int = 2) -> str:
-    """Return the summary of the given wikipedia article
+    """Return the summary of the given wikipedia article with <sentences_wanted> being
+    the number of sentences in the summary
+    (the summary may contain less than <sentences_wanted> sentence if the article
+    corresponding to <url> only has one sentence in it)
 
     Precondition
         - 'https://en.wikipedia.org/wiki/' in url
@@ -222,13 +243,13 @@ def get_summary(url: str, sentences_wanted: int = 2) -> str:
     html = data_to_parse.read().decode()
     data_to_parse.close()
 
-    parser = _WikipediaSummaryParser(sentences_wanted)
+    parser = WikipediaSummaryParser(sentences_wanted)
     parser.feed(html)
 
     return parser.summary
 
 
-def get_title(url: str):
+def get_title(url: str) -> str:
     """Return the title of the given wikipedia article
 
     >>> get_title('https://en.wikipedia.org/wiki/Rebecca_Sugar')
@@ -241,5 +262,19 @@ def get_title(url: str):
 
 
 if __name__ == '__main__':
+
     import doctest
     doctest.testmod()
+
+    import python_ta.contracts
+
+    python_ta.contracts.check_all_contracts()
+
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['urllib.error', 'urllib.request', 'html.parser'],
+        'allowed-io': [],
+        'max-line-length': 100,
+        'disable': ['E1136']
+    })
