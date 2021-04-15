@@ -129,17 +129,17 @@ def build_wikigraph(starting_url: str, num_sources: int, sources_per_page: int) 
         # or we found our desired number of sources
         while not (i >= len(neighbours) or sources_found >= num_sources or
                    sources_found_per_page >= sources_per_page):
-            v = neighbours[i]
-            v_name = get_title(v)
+            v_link = neighbours[i]
+            v_name = get_title(v_link)
             i += 1
 
             # if the neighbour is not in visited, add it to the graph
-            if v not in visited:
-                q.enqueue(v)
-                visited.append(v)
+            if v_link not in visited:
+                q.enqueue(v_link)
+                visited.append(v_link)
 
-                if not wiki_graph_so_far.is_vertex_in_graph(v_name):
-                    wiki_graph_so_far.add_vertex(v_name, v)
+                if not wiki_graph_so_far.is_vertex_in_graph(v_name) and v_link != curr_url:
+                    wiki_graph_so_far.add_vertex(v_name, v_link)
                     sources_found_per_page += 1
                     sources_found += 1
 

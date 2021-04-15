@@ -149,29 +149,29 @@ class WikiGraph:
         else:
             return False
 
-    def to_networkx(self, max_vertices: int = 5000) -> nx.Graph:
-        """Convert this graph into a networkx Graph.
-
-        max_vertices specifies the maximum number of vertices that can appear in the graph.
-        (This is necessary to limit the visualization output for large graphs.)
-
-        Note that this method is provided for you, and you shouldn't change it.
-        """
-        graph_nx = nx.Graph()
-        for v in self._vertices.values():
-            graph_nx.add_node(v.name)
-
-            for u in v.neighbours:
-                if graph_nx.number_of_nodes() < max_vertices:
-                    graph_nx.add_node(u.name)
-
-                if u.name in graph_nx.nodes:
-                    graph_nx.add_edge(v.name, u.name)
-
-            if graph_nx.number_of_nodes() >= max_vertices:
-                break
-
-        return graph_nx
+    # def to_networkx(self, max_vertices: int = 5000) -> nx.Graph:
+    #     """Convert this graph into a networkx Graph.
+    #
+    #     max_vertices specifies the maximum number of vertices that can appear in the graph.
+    #     (This is necessary to limit the visualization output for large graphs.)
+    #
+    #     Note that this method is provided for you, and you shouldn't change it.
+    #     """
+    #     graph_nx = nx.Graph()
+    #     for v in self._vertices.values():
+    #         graph_nx.add_node(v.name)
+    #
+    #         for u in v.neighbours:
+    #             if graph_nx.number_of_nodes() < max_vertices:
+    #                 graph_nx.add_node(u.name)
+    #
+    #             if u.name in graph_nx.nodes:
+    #                 graph_nx.add_edge(v.name, u.name)
+    #
+    #         if graph_nx.number_of_nodes() >= max_vertices:
+    #             break
+    #
+    #     return graph_nx
 
 
 # if __name__ == '__main__':

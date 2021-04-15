@@ -188,9 +188,10 @@ def get_adjacent_urls_weighted(url: str) -> list:
         neighbours_to_weights = {}
 
         for article_link in parser.articles:
-            article_name = get_title(article_link)
-            weight1 = html.count(article_name)
-            neighbours_to_weights[(article_link, article_name)] = weight1
+            if article_link != url:
+                article_name = get_title(article_link)
+                weight1 = html.count(article_name)
+                neighbours_to_weights[(article_link, article_name)] = weight1
 
         return sorted(list(neighbours_to_weights.items()), key=lambda item: item[1], reverse=True)
 
@@ -198,16 +199,16 @@ def get_adjacent_urls_weighted(url: str) -> list:
         return []
 
 
-def _count_appearances_in_article(url: str, article_name: str) -> int:
-    try:
-        data_to_parse = urllib.request.urlopen(url)
-        html = data_to_parse.read().decode()
-        data_to_parse.close()
-
-        return html.count(article_name)
-
-    except urllib.error.HTTPError:
-        return 0
+# def _count_appearances_in_article(url: str, article_name: str) -> int:
+#     try:
+#         data_to_parse = urllib.request.urlopen(url)
+#         html = data_to_parse.read().decode()
+#         data_to_parse.close()
+#
+#         return html.count(article_name)
+#
+#     except urllib.error.HTTPError:
+#         return 0
 
 
 def get_summary(url: str) -> str:
