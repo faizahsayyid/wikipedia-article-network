@@ -25,21 +25,15 @@ import wikipedia_html_parsers
 
 def test_get_adjacent_url() -> None:
     """ ... """
-    expected = ['https://en.wikipedia.org/wiki/Thoroughbred',
+    expected = {'https://en.wikipedia.org/wiki/Thoroughbred',
                 'https://en.wikipedia.org/wiki/Leading_sire_in_Great_Britain_and_Ireland',
                 'https://en.wikipedia.org/wiki/Francis_Godolphin,_2nd_Earl_of_Godolphin',
                 'https://en.wikipedia.org/wiki/Foundation_bloodstock',
                 'https://en.wikipedia.org/wiki/Godolphin_Arabian',
                 'https://en.wikipedia.org/wiki/Bald_Galloway',
-
-
-                'https://en.wikipedia.org/wiki/Godolphin_Arabian',
                 'https://en.wikipedia.org/wiki/Stallion_(horse)',
                 'https://en.wikipedia.org/wiki/Kingdom_of_Great_Britain',
-                'https://en.wikipedia.org/wiki/Francis_Godolphin,_2nd_Earl_of_Godolphin',
                 'https://en.wikipedia.org/wiki/Leading_sire_in_Great_Britain_and_Ireland',
-
-
                 'https://en.wikipedia.org/wiki/Lath_(horse)',
                 'https://en.wikipedia.org/wiki/Guinea_(British_coin)',
                 'https://en.wikipedia.org/wiki/Leading_sire_in_Great_Britain_%26_Ireland',
@@ -48,15 +42,16 @@ def test_get_adjacent_url() -> None:
                 'https://en.wikipedia.org/wiki/Boston_(horse)',
                 'https://en.wikipedia.org/wiki/Matchem',
                 'https://en.wikipedia.org/wiki/Potoooooooo'
-                ]
-    actual = wikipedia_html_parsers.get_adjacent_urls('https://en.wikipedia.org/wiki/Cade_(horse)')
+                }
+    actual = set(wikipedia_html_parsers.get_adjacent_urls
+                 ('https://en.wikipedia.org/wiki/Cade_(horse)'))
 
-    assert expected == actual
+    assert actual == expected
 
 
 def test_get_adjacent_url_weighted() -> None:
     """ ... """
-    expected = [(('https://en.wikipedia.org/wiki/Thoroughbred',
+    expected = {(('https://en.wikipedia.org/wiki/Thoroughbred',
                   'Thoroughbred'), 1),
                 (('https://en.wikipedia.org/wiki/Leading_sire_in_Great_Britain_and_Ireland',
                   'Leading sire in Great Britain and Ireland'), 9),
@@ -79,7 +74,7 @@ def test_get_adjacent_url_weighted() -> None:
                   'Guinea (British_coin)'), 1),
 
                 (('https://en.wikipedia.org/wiki/Leading_sire_in_Great_Britain_%26_Ireland',
-                  'Leading_sire_in_Great_Britain_%26_Ireland'), 0),
+                  'Leading sire in Great Britain %26 Ireland'), 0),
 
                 (('https://en.wikipedia.org/wiki/Mambrino_(horse)',
                   'Mambrino (horse)'), 3),
@@ -91,9 +86,9 @@ def test_get_adjacent_url_weighted() -> None:
                   'Matchem'), 1),
                 (('https://en.wikipedia.org/wiki/Potoooooooo',
                   'Potoooooooo'), 2)
-                ]
-    actual = wikipedia_html_parsers.get_adjacent_urls_weighted(
-        'https://en.wikipedia.org/wiki/Cade_(horse)')
+                }
+    actual = set(wikipedia_html_parsers.get_adjacent_urls_weighted
+                 ('https://en.wikipedia.org/wiki/Cade_(horse)'))
 
     assert expected == actual
 
