@@ -25,9 +25,6 @@ import build_wikigraph_weighted
 import wikipedia_html_parsers
 import make_txt_file
 
-import os
-import flask
-
 cyto.load_extra_layouts()
 
 css_stylesheet = [{'body': {
@@ -111,17 +108,12 @@ app.layout = html.Div(children=[
                     'padding-top': '1.5em'
                 }
             ),
-            # html.Button(id='generate_txt_file', n_clicks=0,
-            #             children='Press to download a txt file '
-            #                      'of all nodes in the graph!'),
+
             html.Div(children=[
-                html.A(id='txt_download_area',
-                       children="A text file of all nodes in the graph will generate here",
-                       style={
-                           'background-color': '#EEEEEE',
-                           'color': '#333333',
-                           'border': '2px solid #CCCCCC'
-                       }),
+                html.Button(id='generate_txt_file', n_clicks=0,
+                            children='Press to download a txt file '
+                                     'of all nodes in the graph!'),
+                dcc.Download(id='txt_download', children='Pls Work'),
                 dcc.Loading(id="loading_file",
                             type="circle",
                             children=html.Div(id="loading_file_output"),
@@ -296,37 +288,30 @@ def display_name_summary_link_infobox(data) -> (str, str, str):
 
 
 @app.callback(
-    Output('txt_download_area', 'children'),
-    Output('txt_download_area', 'download'),
-    Output('txt_download_area', 'href'),
+    Output('txt_download', 'data'),
     Output('loading_file_output', 'children'),
-    Input('cytoscape_wiki_graph', 'elements'),
+    Input('generate_txt_file', 'n_clicks'),
+    State('cytoscape_wiki_graph', 'elements'),
     State('wiki_url_input', 'value'),
     State('wiki_num_sources_input', 'value'),
     State('wiki_num_sources_per_page_input', 'value')
 )
-def create_txt_download(graph_elements, url, num_s, num_s_per_page) -> str:
-    """This function builds and downloads a text file of all elements in the graph for the user"""
-    if graph_elements is not None:
+def create_txt_download(n_clicks, graph_elements, url, num_s, num_s_per_page) -> (dict, None):
+    """This function builds a text file of all elements in the graph for the user after the
+    graph is updated.
+        """
+    if graph_elements is not None and n_clicks > 0:
         title = url.replace('https://en.wikipedia.org/wiki/', '')
         filename = f"{title}.txt"
-        path = f"txt_file_downloads/{filename}"
         graph_text = make_txt_file.make_txt_file_string(graph_elements, url,
                                                         title, num_s, num_s_per_page)
-        with open(path, "wb") as file:
-            file.write(graph_text)
-        return ("Click here to download: " + filename, "", "/" + path, None)
+        data = {
+            'content': graph_text,
+            'filename': filename
+        }
+        return data, None
     else:
-        return ("", "", "", None)
-
-
-@app.server.route('/txt_file_downloads/<path>')
-def get_download_directory(path) -> None:
-    root_dir = os.getcwd()
-    print(root_dir)
-    return flask.send_from_directory(
-        os.path.join(root_dir, 'txt_file_downloads'), path
-    )
+        return None, None
 
 
 if __name__ == '__main__':

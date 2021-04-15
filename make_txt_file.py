@@ -21,12 +21,12 @@ import wikipedia_html_parsers as wh
 DIV = '=========='
 
 
-def make_txt_file_string(graph_elements, url, title, num_sources, sources_per_page) -> bytes:
+def make_txt_file_string(graph_elements, url, title, num_sources, sources_per_page) -> str:
     """ Create a text file titled <txt_file> of the collected Wikipedia article networks.
     """
     start_text = _make_title(url, title, num_sources, sources_per_page, "")
     text = _make_body_entries(graph_elements, url, start_text)
-    return text.encode("utf8")
+    return text
 
 
 def _make_title(url, title, num_sources, sources_per_page, file_text) -> str:
