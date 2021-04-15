@@ -1,7 +1,14 @@
 """CSC111 Winter 2021 Final Project: Wikipedia Graph Class
 Module Description
 ===============================
-[INSERT MODULE DESCRIPTION]
+
+This module contains the WikiGraph class, which is graph used to represent a
+network of wikipedia articles.
+
+Each vertex in the graph represents a Wikipedia page, and an edge exist between
+two vertices v1 and v2 if and only if v1 contains a link to v2 or v2 contains a link
+to v1.
+
 Copyright and Usage Information
 ===============================
 This file is provided solely for the personal and private use of Faizah Sayyid, Tina Zhang,
@@ -15,7 +22,7 @@ from typing import Any
 
 
 class _Vertex:
-    """A vertex in a Wikipedia link graph, used to represent a Wikipedia page.
+    """A vertex in a WikiGraph, used to represent a Wikipedia page.
 
     Each vertex name is represented as a string.
 
@@ -63,6 +70,10 @@ class _Vertex:
 
 class WikiGraph:
     """A graph used to represent a Wikipedia pages network.
+
+    Each vertex in the graph represents a Wikipedia page, and an edge exist between
+    two vertices v1 and v2 if and only if v1 contains a link to v2 or v2 contains a link
+    to v1.
     """
     # Private Instance Attributes:
     #     - _vertices:
@@ -114,7 +125,8 @@ class WikiGraph:
     def get_neighbours(self, name: Any) -> set:
         """Return a set of the neighbours of the given page name.
 
-        Note that the page *names* are returned, not the _Vertex objects themselves.
+        Note that the page *names* (aka the titles of the webpages) are returned,
+        not the _Vertex objects themselves.
 
         Raise a ValueError if page name does not appear as a vertex in this graph.
         """
@@ -129,8 +141,9 @@ class WikiGraph:
         """
         return set(self._vertices.keys())
 
-    def is_vertex_in_graph(self, name) -> bool:
+    def is_vertex_in_graph(self, name: str) -> bool:
         """Return whether <name> is a vertex in this graph
+
         >>> g = WikiGraph()
         >>> g.add_vertex('Rebecca Sugar', 'https://en.wikipedia.org/wiki/Rebecca_Sugar')
         >>> g.is_vertex_in_graph('Rebecca Sugar')
@@ -149,7 +162,6 @@ class WikiGraph:
         """
         if item1 in self._vertices and item2 in self._vertices:
             v1 = self._vertices[item1]
-            # v2 = self._vertices[item2]
 
             return v1.check_connected(item2, set())
         else:
@@ -157,20 +169,19 @@ class WikiGraph:
 
 
 if __name__ == '__main__':
-    # import python_ta.contracts
-    #
-    # python_ta.contracts.check_all_contracts()
+    import python_ta.contracts
+
+    python_ta.contracts.check_all_contracts()
 
     import doctest
 
     doctest.testmod()
 
-    # import python_ta
+    import python_ta
 
-    # python_ta.check_all(config={
-    #     'max-line-length': 100,
-    #     'disable': ['E1136'],
-    #     'extra-imports': ['csv', 'networkx'],
-    #     'allowed-io': ['load_review_graph'],
-    #     'max-nested-blocks': 4
-    # })
+    python_ta.check_all(config={
+        'extra-imports': [],
+        'allowed-io': [],
+        'max-line-length': 100,
+        'disable': ['E1136']
+    })
