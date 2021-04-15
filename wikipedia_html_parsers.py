@@ -133,13 +133,13 @@ class _WikipediaSummaryParser(HTMLParser):
         Update self._skip_footnote the end of a footnote is reached
 
         >>> summary_parser = _WikipediaSummaryParser()
-        >>> summary_parser.handle_endtag('p', [])
+        >>> summary_parser.handle_endtag('p')
         >>> summary_parser._found_p
         False
-        >>> summary_parser.handle_endtag('sup', [])
+        >>> summary_parser.handle_endtag('sup')
         >>> summary_parser._skip_footnote
         False
-        >>> summary_parser.handle_endtag('h1', [])
+        >>> summary_parser.handle_endtag('h1')
         >>> summary_parser._found_p
         False
         >>> summary_parser._skip_footnote
@@ -179,7 +179,6 @@ def get_adjacent_urls(url: str) -> list[str]:
         return []
 
 
-# list[tuple[tuple[str, str], float]]
 def get_adjacent_urls_weighted(url: str) -> list:
     """Return a List of all adjacent urls in strings to the input url."""
 
