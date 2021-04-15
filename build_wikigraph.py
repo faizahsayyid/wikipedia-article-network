@@ -138,7 +138,7 @@ def build_wikigraph(starting_url: str, num_sources: int, sources_per_page: int) 
                 q.enqueue(v_link)
                 visited.append(v_link)
 
-                if not wiki_graph_so_far.is_vertex_in_graph(v_name) and v_link != curr_url:
+                if not wiki_graph_so_far.is_vertex_in_graph(v_name):
                     wiki_graph_so_far.add_vertex(v_name, v_link)
                     sources_found_per_page += 1
                     sources_found += 1
