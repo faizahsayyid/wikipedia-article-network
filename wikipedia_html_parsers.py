@@ -176,16 +176,16 @@ class _WikipediaImageParser(HTMLParser):
         pass
 
     def handle_starttag(self, tag: str, attrs: tuple) -> None:
-        """..."""
+        """This find the first image tag that is larger than a certain size
+        (to avoid thumbnails) and returns it"""
         if tag == 'img' and self.image == '':
             for attrib in attrs:
                 if attrib[0] == 'height' and int(attrib[1]) > 50:
                     self._found_image = True
                     break
-            if self._found_image == True:
+            if self._found_image is True:
                 for attrib in attrs:
                     if attrib[0] == 'src':
-                        self._found_image = True
                         self.image = attrib[1]
 
 

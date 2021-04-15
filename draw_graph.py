@@ -75,8 +75,7 @@ app.layout = html.Div(children=[
                            value='off',
                            style={
                                'padding-top': '1em'
-                           }
-                           ),
+                           }),
             dcc.RadioItems(id='graph_type_selection',
                            options=[
                                {'label': '(Weighted) Most common links on page',
@@ -87,8 +86,7 @@ app.layout = html.Div(children=[
                            style={
                                'padding-top': '1em',
                                'padding-bottom': '1em'
-                           }
-                           ),
+                           }),
 
             html.Div(children=[
                 html.Button(id='update_graph_button', n_clicks=0,
@@ -102,7 +100,8 @@ app.layout = html.Div(children=[
                             style={
                                 'text-justify': 'right',
                                 'padding-bottom': '2em'
-                            })],
+                            })
+            ],
                 style={
                     'padding-bottom': '2em',
                     'padding-top': '1.5em'
@@ -125,7 +124,8 @@ app.layout = html.Div(children=[
             ],
                 style={
                     'padding-bottom': '2em'
-                })
+                }
+            )
         ],
         style={
             'width': '27%',
@@ -133,7 +133,8 @@ app.layout = html.Div(children=[
             'padding': '.5em .5em .5em .5em',
             'border-style': 'solid',
             'margin-top': '4em',
-        }),
+        }
+    ),
 
     html.Div(children=[html.H6('Generated Graph:'),
                        cyto.Cytoscape(
@@ -160,8 +161,7 @@ app.layout = html.Div(children=[
                                    'color': '#03254E',
                                    'text-wrap': 'wrap'
                                }
-                           }
-                           ],
+                           }],
                            style={'width': '100%', 'height': '45em', 'border-style': 'solid'},
                        )],
              style={
@@ -222,7 +222,8 @@ def update_cytoscape_display(n_clicks, images, weighting, url, num_sources, sour
             temp_image = wikipedia_html_parsers.get_image(new_graph.get_vertex(vertex).url)
         else:
             temp_image = ''
-        # Separate handling for when the node is the root page, or had a long or short title
+
+        # Separate size handling for when the node is the root page, or has a long or short title
         if new_graph.get_vertex(vertex).url == url:
             temp_width = len(vertex) + 20
             temp_height = temp_width
@@ -274,17 +275,18 @@ def update_cytoscape_display(n_clicks, images, weighting, url, num_sources, sour
               Output('cytoscape_summary', 'children'),
               Input('cytoscape_wiki_graph', 'tapNodeData'))
 def display_name_summary_link_infobox(data) -> (str, str, str):
-    """This function outputs the link, title, and summary of the article in to the infobox
-    below the cytoscape graph"""
+    """This function outputs the link, title, and summary of the selected article node in to the
+    infobox below the cytoscape graph"""
     if data:
         try:
+            # This retrieves the summary of the selected article using an html parser
             summary = wikipedia_html_parsers.get_summary(data['id'])
             return ("Article: '" + data['label'] + "'", "URL: " + data['id'],
                     'Summary: ' + summary)
         except NameError:
-            return ("", "", "")
+            return ("Once an article is selected, it's information will appear here", "", "")
     else:
-        return ("", "", "")
+        return ("Once an article is selected, it's information will appear here", "", "")
 
 
 @app.callback(
@@ -297,20 +299,28 @@ def display_name_summary_link_infobox(data) -> (str, str, str):
     State('wiki_num_sources_per_page_input', 'value')
 )
 def create_txt_download(n_clicks, graph_elements, url, num_s, num_s_per_page) -> (dict, None):
-    """This function builds a text file of all elements in the graph for the user after the
-    graph is updated.
-        """
+    """This function builds the content of a text file of all elements in the graph for the user
+    after the graph is updated, which is then sent to the dcc.download component to be downloaded by
+    the user. """
+    # Check that there are graph elements to write to a file
     if graph_elements is not None and n_clicks > 0:
+        # Get the title from the url and use it for the filename
         title = url.replace('https://en.wikipedia.org/wiki/', '')
         filename = f"{title}.txt"
+
+        # Call a helped function to write out the file content string that will be downloaded
         graph_text = make_txt_file.make_txt_file_string(graph_elements, url,
                                                         title, num_s, num_s_per_page)
+
+        # Adds the content and filename to a dictionary format as this format is required by the
+        # dcc.download component, which will download this content in a text file for the user
         data = {
             'content': graph_text,
             'filename': filename
         }
         return data, None
     else:
+        # Return none so that nothing is downloaded if the callback runs unexpectedly
         return None, None
 
 

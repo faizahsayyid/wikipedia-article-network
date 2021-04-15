@@ -12,8 +12,6 @@ This file is Copyright (c) 2021 Faizah Sayyid, Tina Zhang, Poorvi Sharma, Courtn
 """
 from __future__ import annotations
 from typing import Any
-import wikipedia_html_parsers
-
 from wikigraph_copy import WikiGraph
 
 
@@ -28,6 +26,7 @@ class _WeightedVertex:
     Instance Attributes:
         - name: The data stored in this vertex.
         - url: The URL of this webpage.
+        - class_id: A numeric representation of the vertex name to be used as an id for node styling
         - neighbours: The vertices that are adjacent to this vertex, and their corresponding
             edge weights.
 
@@ -116,41 +115,6 @@ class WeightedWikiGraph(WikiGraph):
             return {(neighbour.name, v.neighbours[neighbour]) for neighbour in v.neighbours}
         else:
             raise ValueError
-
-    # def get_all_vertices(self) -> set:
-    #     """Return a set of all vertex page names in this graph.
-    #     """
-    #     return set(self._vertices.keys())
-    #
-    # def is_vertex_in_graph(self, name) -> bool:
-    #     """Return whether <name> is a vertex in this graph"""
-    #     return name in self._vertices
-    #
-    # def get_vertex(self, name) -> _Vertex:
-    #     """Returns the vertex based on the given key"""
-    #     return self._vertices[name]
-    #
-    # def get_class_id(self, name) -> str:
-    #     """Returns the class id of a vertex"""
-    #     return self._vertices[name].class_id
-    #
-    # def get_image(self, name) -> str:
-    #     """Returns the page image"""
-    #     return self._vertices[name].image
-
-    def to_cytoscape(self) -> list[dict]:
-        """Returns the list of graph data needed to display the graph in cytoscape"""
-        cyto_elements = []
-        for vertex in self._vertices:
-            cyto_elements.append({'data': {'id': self._vertices[vertex].url,
-                                           'label': self._vertices[vertex].name},
-                                  'classes': self._vertices[vertex].class_id})
-            for neighbour in self._vertices[vertex].neighbours:
-                cyto_elements.append({'data': {'source': self._vertices[vertex].url,
-                                               'target': neighbour.url,
-                                               'label': self._vertices[vertex].name +
-                                                        ' to ' + neighbour.name}})
-        return cyto_elements
 
 
 if __name__ == '__main__':
