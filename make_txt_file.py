@@ -3,7 +3,8 @@
 Module Description
 ===============================
 
-[INSERT MODULE DESCRIPTION]
+This module contains functions that take the nodes in the graph and write the information from these
+nodes to a string to be written to a text file.
 
 Copyright and Usage Information
 ===============================
@@ -116,6 +117,6 @@ if __name__ == '__main__':
 
     python_ta.check_all(config={
         'max-line-length': 100,
-        'disable': ['E1136', 'E9999'],
+        'disable': ['E9999'],
         'max-nested-blocks': 4
     })

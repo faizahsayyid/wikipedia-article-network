@@ -187,13 +187,20 @@ class WikipediaSummaryParser(HTMLParser):
 
 
 class _WikipediaImageParser(HTMLParser):
+    """A Wikipedia image parser, used to extract a wikipedia article's image and return the link
+    to that image.
+
+        Instance Attributes:
+            - _found_image: A boolean saving whether or not the parser found an image in the article
+            - image: The link to the found image
+        """
     _found_image: bool
     image: str
 
     def __init__(self) -> None:
-        """Initialize a new article parser.
+        """Initialize a new image parser.
 
-        This article parser is initialized an empty list of articles.
+        This parser is initialized with an empty string for the link to the image.
         """
         super().__init__()
         self.reset()
@@ -209,8 +216,11 @@ class _WikipediaImageParser(HTMLParser):
         pass
 
     def handle_starttag(self, tag: str, attrs: tuple) -> None:
-        """This find the first image tag that is larger than a certain size
-        (to avoid thumbnails) and returns it"""
+        """This find the first image tag that is larger than a certain size on an article
+        (to avoid one icon thumbnails) and returns it.
+
+         If no image is found, self.image is simply left as an empty string
+         """
         if tag == 'img' and self.image == '':
             for attrib in attrs:
                 if attrib[0] == 'height' and int(attrib[1]) > 50:
