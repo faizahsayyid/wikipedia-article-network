@@ -117,6 +117,7 @@ if __name__ == '__main__':
 
     python_ta.check_all(config={
         'max-line-length': 100,
-        'disable': ['E9999'],
+        'extra-imports': ['wikipedia_html_parsers'],
+        'disable': [],
         'max-nested-blocks': 4
     })
