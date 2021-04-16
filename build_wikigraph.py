@@ -123,31 +123,48 @@ def build_wikigraph(starting_url: str, num_sources: int, sources_per_page: int) 
         # find the neighbouring links on the article for curr_url
         neighbours = get_adjacent_urls(curr_url)
 
-        # Reset the counter the following while loop
-        i = 0
-        sources_found_per_page = 0
-
-        # stop loop either when we've added all the neighbours or curr_url
-        # or we found our desired number of sources
-        while not (i >= len(neighbours) or sources_found >= num_sources
-                   or sources_found_per_page >= sources_per_page):
-            v_link = neighbours[i]
-            v_name = get_title(v_link)
-            i += 1
-
-            # if the neighbour is not in visited, add it to the graph
-            if v_link not in visited:
-                q.enqueue(v_link)
-                visited.append(v_link)
-
-                if not wiki_graph_so_far.is_vertex_in_graph(v_name):
-                    wiki_graph_so_far.add_vertex(v_name, v_link)
-                    sources_found_per_page += 1
-                    sources_found += 1
-
-            wiki_graph_so_far.add_edge(curr_name, v_name)
+        bfs_objects = (visited, q)
+        sources_info = (sources_found, num_sources, sources_per_page)
+        new_sources_found = _update_wikigraph(neighbours, bfs_objects, sources_info,
+                                              wiki_graph_so_far, curr_name)
+        sources_found += new_sources_found
 
     return wiki_graph_so_far
+
+
+def _update_wikigraph(neighbours: list[str], bfs_objects: tuple[list, _Queue],
+                      sources_info: tuple[int, int, int],
+                      wikigraph: WikiGraph, curr_name: str) -> int:
+    """..."""
+    # Reset the counter the following while loop
+    i = 0
+    sources_found_per_page = 0
+    new_sources_found = 0
+    curr_sources_found, num_sources, sources_per_page = sources_info
+    visited, q = bfs_objects
+
+    # stop loop either when we've added all the neighbours or curr_url
+    # or we found our desired number of sources
+    while not (i >= len(neighbours)
+               or (new_sources_found + curr_sources_found) >= num_sources
+               or sources_found_per_page >= sources_per_page):
+        v_link = neighbours[i]
+        v_name = get_title(v_link)
+        i += 1
+
+        # if the neighbour is not in visited, add it to the graph
+        if v_link not in visited:
+            q.enqueue(v_link)
+            visited.append(v_link)
+
+            if not wikigraph.is_vertex_in_graph(v_name):
+                wikigraph.add_vertex(v_name, v_link)
+                sources_found_per_page += 1
+                new_sources_found += 1
+
+        wikigraph.add_edge(curr_name, v_name)
+
+    return new_sources_found
 
 
 def build_weighted_wikigraph(starting_url: str, num_sources: int,
@@ -202,41 +219,67 @@ def build_weighted_wikigraph(starting_url: str, num_sources: int,
         # find the neighbouring links on the article for curr_url
         neighbours = get_adjacent_urls_weighted(curr_url)
 
-        # Reset the counter the following while loop
-        i = 0
-        sources_found_per_page = 0
-
-        # stop loop either when we've added all the neighbours or curr_url
-        # or we found our desired number of sources
-        while not (i >= len(neighbours) or sources_found >= num_sources
-                   or sources_found_per_page >= sources_per_page):
-            v, partial_weight = neighbours[i]
-            v_link, v_name = v
-            i += 1
-
-            # if the neighbour is not in visited, add it to the graph
-            if v_link not in visited:
-                q.enqueue(v_link)
-                visited.append(v_link)
-
-                if not wiki_graph_so_far.is_vertex_in_graph(v_name):
-                    wiki_graph_so_far.add_vertex(v_name, v_link)
-                    sources_found_per_page += 1
-                    sources_found += 1
-
-            # add the edge and weight to edges_to_weights
-            if (v_name, curr_name) in edges_to_weights:
-                edges_to_weights[(v_name, curr_name)].append(partial_weight)
-            else:
-                edges_to_weights[(curr_name, v_name)] = [partial_weight]
+        sources_info = (sources_found, num_sources, sources_per_page)
+        bfs_objects = (visited, q)
+        graph_info = (curr_name, edges_to_weights)
+        new_sources_found = _update_weighted_wikigraph(neighbours, bfs_objects, sources_info,
+                                                       wiki_graph_so_far, graph_info)
+        sources_found += new_sources_found
 
     # add all the edges and weights to wiki_graph_so_far
+    _add_edges_weights_to_graph(edges_to_weights, wiki_graph_so_far)
+
+    return wiki_graph_so_far
+
+
+def _update_weighted_wikigraph(neighbours: list[tuple], bfs_objects: tuple[list, _Queue],
+                               sources_info: tuple[int, int, int],
+                               wikigraph: WeightedWikiGraph,
+                               graph_info: tuple[str, dict]) -> int:
+    """..."""
+    # Reset the counter the following while loop
+    i = 0
+    sources_found_per_page = 0
+    curr_sources_found, num_sources, sources_per_page = sources_info
+    visited, q = bfs_objects
+    curr_name, edges_to_weights = graph_info
+    new_sources_found = 0
+
+    # stop loop either when we've added all the neighbours or curr_url
+    # or we found our desired number of sources
+    while not (i >= len(neighbours)
+               or (new_sources_found + curr_sources_found) >= num_sources
+               or sources_found_per_page >= sources_per_page):
+        v, partial_weight = neighbours[i]
+        v_link, v_name = v
+        i += 1
+
+        # if the neighbour is not in visited, add it to the graph
+        if v_link not in visited:
+            q.enqueue(v_link)
+            visited.append(v_link)
+
+            if not wikigraph.is_vertex_in_graph(v_name):
+                wikigraph.add_vertex(v_name, v_link)
+                sources_found_per_page += 1
+                new_sources_found += 1
+
+        # add the edge and weight to edges_to_weights
+        if (v_name, curr_name) in edges_to_weights:
+            edges_to_weights[(v_name, curr_name)].append(partial_weight)
+        else:
+            edges_to_weights[(curr_name, v_name)] = [partial_weight]
+
+    return new_sources_found
+
+
+def _add_edges_weights_to_graph(edges_to_weights: dict[tuple, list],
+                                wiki_graph: WeightedWikiGraph) -> None:
+    """..."""
     for edge in edges_to_weights:
         v1, v2 = edge
         weight = sum(edges_to_weights[edge]) / 2
-        wiki_graph_so_far.add_edge(v1, v2, weight)
-
-    return wiki_graph_so_far
+        wiki_graph.add_edge(v1, v2, weight)
 
 
 if __name__ == '__main__':
@@ -247,12 +290,12 @@ if __name__ == '__main__':
 
     python_ta.contracts.check_all_contracts()
 
-    import python_ta
-
-    python_ta.check_all(config={
-        'extra-imports': ['wikigraph', 'wikipedia_html_parsers',
-                          'weighted_wikigraph_class'],
-        'allowed-io': [],
-        'max-line-length': 100,
-        'disable': ['E1136']
-    })
+    # import python_ta
+    #
+    # python_ta.check_all(config={
+    #     'extra-imports': ['wikigraph', 'wikipedia_html_parsers',
+    #                       'weighted_wikigraph_class'],
+    #     'allowed-io': [],
+    #     'max-line-length': 100,
+    #     'disable': ['E1136']
+    # })

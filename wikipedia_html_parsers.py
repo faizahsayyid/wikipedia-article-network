@@ -308,6 +308,7 @@ def get_image(url: str):
 
     return parser.image
 
+
 if __name__ == '__main__':
 
     import doctest
