@@ -155,4 +155,17 @@ def test_build_weighted_wikigraph() -> None:
 
 if __name__ == '__main__':
     import pytest
-    pytest.main(['test_build_wikigraph.py', '-vv'])
+    pytest.main(['test_build_wikigraph.py', '-v'])
+
+    import python_ta.contracts
+
+    python_ta.contracts.check_all_contracts()
+
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['build_wikigraph', 'weighted_wikigraph_class', 'wikigraph'],
+        'allowed-io': [],
+        'max-line-length': 100,
+        'disable': ['E1136']
+    })
