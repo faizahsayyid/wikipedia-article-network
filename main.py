@@ -74,7 +74,7 @@ app.layout = html.Div(children=[
                                {'label': 'Background Images off (Faster)', 'value': 'off'}
                            ],
                            value='off',
-                            style={
+                           style={
                                'padding-top': '1em'
                            }),
             dcc.RadioItems(id='graph_type_selection',
@@ -106,7 +106,7 @@ app.layout = html.Div(children=[
                 style={
                     'padding-bottom': '2em',
                     'padding-top': '1.5em'
-                      }
+                }
             ),
 
             html.Div(children=[
@@ -342,6 +342,9 @@ if __name__ == '__main__':
     #
     # python_ta.check_all(config={
     #     'max-line-length': 100,
+    #     'extra-imports': ['dash', 'dash_cytoscape', 'dash_core_components',
+    #                       'dash.dependencies', 'build_wikigraph', 'make_txt_file',
+    #                       'wikipedia_html_parsers'],
     #     'disable': ['E9999', 'E9997', 'R0913'],
     #     'max-nested-blocks': 4
     # })

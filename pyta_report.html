@@ -533,13 +533,13 @@ footer {
     <body>
         <header>
             <h1 class="title">PyTA Error Report</h1>
-            <time>Fri. Apr. 16 2021, 12:03:29 AM</time>
+            <time>Fri. Apr. 16 2021, 09:17:24 AM</time>
         </header>
         <main>
             
             <section>
                 <article class="file-name">
-                    <h2> /Users/faizahsayyid/Documents/University Of Toronto/First Year/Winter 2021/csc111/assignments/CSC111-Project/build_wikigraph.py </h2>
+                    <h2> /Users/faizahsayyid/Documents/University Of Toronto/First Year/Winter 2021/csc111/assignments/CSC111-Project/main.py </h2>
                 </article>
                 <article class="error-output code-errors">
                     <h3 class="category-heading">
@@ -569,15 +569,17 @@ footer {
 
                             <div class="info">
                                 <span class="error-link style-error-id">
-                                    <a href="http://www.cs.toronto.edu/~david/pyta/&#35;R0914" target="_blank">&#10064; R0914 (too-many-locals)</a>
+                                    <a href="http://www.cs.toronto.edu/~david/pyta/&#35;E9989" target="_blank">&#10064; E9989 (pep8-errors)</a>
                                 </span>
                                 <span class="occurrences">
-                                1
+                                7
                                 
-                                 occurrence.
+                                 occurrences.
                                 
                                 </span>
                                 <span class="shown">
+                                
+                                 (First 5 shown).
                                 
                                 </span>
                                 <span class="slider">
@@ -589,57 +591,227 @@ footer {
                                 
                                 <div class="message">
                                     <h4 class="message-name">
-                                        [Line 236] This function has too many local variables (19, exceeding limit 15). You should try to reduce the complexity of the function by splitting up it, or combining related objects as a single one.
+                                        [Line 109] Found pycodestyle (PEP8) style error at line 109, column 16: closing bracket does not match indentation of opening bracket's line
                                         <span class="slider">
                                             <button style="float: right; background: #458B00;"> Expand/Collapse </button>
                                         </span>
                                     </h4>
                                     <div class="collapsible">
                                       
-                                      <code>  <span class="grey line-num">234</span>  <span class="grey"></span>
-  <span class="grey line-num">235</span>  <span class="grey"></span>
-  <span class="gbold line-num">236</span>  <span class="highlight-pyta"><span class="pygments-k">def</span> <span class="pygments-nf">_update_weighted_wikigraph</span><span class="pygments-p">(</span><span class="pygments-n">neighbours</span><span class="pygments-p">:</span> <span class="pygments-nb">list</span><span class="pygments-p">[</span><span class="pygments-nb">tuple</span><span class="pygments-p">],</span> <span class="pygments-n">bfs_objects</span><span class="pygments-p">:</span> <span class="pygments-nb">tuple</span><span class="pygments-p">[</span><span class="pygments-nb">list</span><span class="pygments-p">,</span> <span class="pygments-n">_Queue</span><span class="pygments-p">],</span></span>
-  <span class="gbold line-num">237</span>                                 <span class="highlight-pyta"><span class="pygments-n">sources_info</span><span class="pygments-p">:</span> <span class="pygments-nb">tuple</span><span class="pygments-p">[</span><span class="pygments-nb">int</span><span class="pygments-p">,</span> <span class="pygments-nb">int</span><span class="pygments-p">,</span> <span class="pygments-nb">int</span><span class="pygments-p">],</span></span>
-  <span class="gbold line-num">238</span>                                 <span class="highlight-pyta"><span class="pygments-n">wikigraph</span><span class="pygments-p">:</span> <span class="pygments-n">WeightedWikiGraph</span><span class="pygments-p">,</span></span>
-  <span class="gbold line-num">239</span>                                 <span class="highlight-pyta"><span class="pygments-n">graph_info</span><span class="pygments-p">:</span> <span class="pygments-nb">tuple</span><span class="pygments-p">[</span><span class="pygments-nb">str</span><span class="pygments-p">,</span> <span class="pygments-nb">dict</span><span class="pygments-p">])</span> <span class="pygments-o">-&gt;</span> <span class="pygments-nb">int</span><span class="pygments-p">:</span></span>
-  <span class="gbold line-num">240</span>      <span class="highlight-pyta"><span class="pygments-s2">&quot;&quot;&quot;Add neighbours to wikigraph, update bfs_objects, update graph_info, and return the</span></span>
-  <span class="gbold line-num">241</span>      <span class="highlight-pyta"><span class="pygments-n">number</span> <span class="pygments-n">of</span> <span class="pygments-n">resources</span> <span class="pygments-n">found</span><span class="pygments-s2">&quot;&quot;&quot;</span></span>
-  <span class="gbold line-num">242</span>      <span class="highlight-pyta"><span class="pygments-c1"># Reset the counter the following while loop</span></span>
-  <span class="gbold line-num">243</span>      <span class="highlight-pyta"><span class="pygments-n">i</span> <span class="pygments-o">=</span> <span class="pygments-mi">0</span></span>
-  <span class="gbold line-num">244</span>      <span class="highlight-pyta"><span class="pygments-n">sources_found_per_page</span> <span class="pygments-o">=</span> <span class="pygments-mi">0</span></span>
-  <span class="gbold line-num">245</span>      <span class="highlight-pyta"><span class="pygments-n">curr_sources_found</span><span class="pygments-p">,</span> <span class="pygments-n">num_sources</span><span class="pygments-p">,</span> <span class="pygments-n">sources_per_page</span> <span class="pygments-o">=</span> <span class="pygments-n">sources_info</span></span>
-  <span class="gbold line-num">246</span>      <span class="highlight-pyta"><span class="pygments-n">visited</span><span class="pygments-p">,</span> <span class="pygments-n">q</span> <span class="pygments-o">=</span> <span class="pygments-n">bfs_objects</span></span>
-  <span class="gbold line-num">247</span>      <span class="highlight-pyta"><span class="pygments-n">curr_name</span><span class="pygments-p">,</span> <span class="pygments-n">edges_to_weights</span> <span class="pygments-o">=</span> <span class="pygments-n">graph_info</span></span>
-  <span class="gbold line-num">248</span>      <span class="highlight-pyta"><span class="pygments-n">new_sources_found</span> <span class="pygments-o">=</span> <span class="pygments-mi">0</span></span>
-  <span class="gbold line-num">249</span>  <span class="highlight-pyta"></span>
-  <span class="gbold line-num">250</span>      <span class="highlight-pyta"><span class="pygments-c1"># stop loop either when we&#39;ve added all the neighbours or curr_url</span></span>
-  <span class="gbold line-num">251</span>      <span class="highlight-pyta"><span class="pygments-c1"># or we found our desired number of sources</span></span>
-  <span class="gbold line-num">252</span>      <span class="highlight-pyta"><span class="pygments-k">while</span> <span class="pygments-ow">not</span> <span class="pygments-p">(</span><span class="pygments-n">i</span> <span class="pygments-o">&gt;=</span> <span class="pygments-nb">len</span><span class="pygments-p">(</span><span class="pygments-n">neighbours</span><span class="pygments-p">)</span></span>
-  <span class="gbold line-num">253</span>                 <span class="highlight-pyta"><span class="pygments-ow">or</span> <span class="pygments-p">(</span><span class="pygments-n">new_sources_found</span> <span class="pygments-o">+</span> <span class="pygments-n">curr_sources_found</span><span class="pygments-p">)</span> <span class="pygments-o">&gt;=</span> <span class="pygments-n">num_sources</span></span>
-  <span class="gbold line-num">254</span>                 <span class="highlight-pyta"><span class="pygments-ow">or</span> <span class="pygments-n">sources_found_per_page</span> <span class="pygments-o">&gt;=</span> <span class="pygments-n">sources_per_page</span><span class="pygments-p">):</span></span>
-  <span class="gbold line-num">255</span>          <span class="highlight-pyta"><span class="pygments-n">v</span><span class="pygments-p">,</span> <span class="pygments-n">partial_weight</span> <span class="pygments-o">=</span> <span class="pygments-n">neighbours</span><span class="pygments-p">[</span><span class="pygments-n">i</span><span class="pygments-p">]</span></span>
-  <span class="gbold line-num">256</span>          <span class="highlight-pyta"><span class="pygments-n">v_link</span><span class="pygments-p">,</span> <span class="pygments-n">v_name</span> <span class="pygments-o">=</span> <span class="pygments-n">v</span></span>
-  <span class="gbold line-num">257</span>          <span class="highlight-pyta"><span class="pygments-n">i</span> <span class="pygments-o">+=</span> <span class="pygments-mi">1</span></span>
-  <span class="gbold line-num">258</span>  <span class="highlight-pyta"></span>
-  <span class="gbold line-num">259</span>          <span class="highlight-pyta"><span class="pygments-c1"># if the neighbour is not in visited, add it to the graph</span></span>
-  <span class="gbold line-num">260</span>          <span class="highlight-pyta"><span class="pygments-k">if</span> <span class="pygments-n">v_link</span> <span class="pygments-ow">not</span> <span class="pygments-ow">in</span> <span class="pygments-n">visited</span><span class="pygments-p">:</span></span>
-  <span class="gbold line-num">261</span>              <span class="highlight-pyta"><span class="pygments-n">q</span><span class="pygments-o">.</span><span class="pygments-n">enqueue</span><span class="pygments-p">(</span><span class="pygments-n">v_link</span><span class="pygments-p">)</span></span>
-  <span class="gbold line-num">262</span>              <span class="highlight-pyta"><span class="pygments-n">visited</span><span class="pygments-o">.</span><span class="pygments-n">append</span><span class="pygments-p">(</span><span class="pygments-n">v_link</span><span class="pygments-p">)</span></span>
-  <span class="gbold line-num">263</span>  <span class="highlight-pyta"></span>
-  <span class="gbold line-num">264</span>              <span class="highlight-pyta"><span class="pygments-k">if</span> <span class="pygments-ow">not</span> <span class="pygments-n">wikigraph</span><span class="pygments-o">.</span><span class="pygments-n">is_vertex_in_graph</span><span class="pygments-p">(</span><span class="pygments-n">v_name</span><span class="pygments-p">):</span></span>
-  <span class="gbold line-num">265</span>                  <span class="highlight-pyta"><span class="pygments-n">wikigraph</span><span class="pygments-o">.</span><span class="pygments-n">add_vertex</span><span class="pygments-p">(</span><span class="pygments-n">v_name</span><span class="pygments-p">,</span> <span class="pygments-n">v_link</span><span class="pygments-p">)</span></span>
-  <span class="gbold line-num">266</span>                  <span class="highlight-pyta"><span class="pygments-n">sources_found_per_page</span> <span class="pygments-o">+=</span> <span class="pygments-mi">1</span></span>
-  <span class="gbold line-num">267</span>                  <span class="highlight-pyta"><span class="pygments-n">new_sources_found</span> <span class="pygments-o">+=</span> <span class="pygments-mi">1</span></span>
-  <span class="gbold line-num">268</span>  <span class="highlight-pyta"></span>
-  <span class="gbold line-num">269</span>          <span class="highlight-pyta"><span class="pygments-c1"># add the edge and weight to edges_to_weights</span></span>
-  <span class="gbold line-num">270</span>          <span class="highlight-pyta"><span class="pygments-k">if</span> <span class="pygments-p">(</span><span class="pygments-n">v_name</span><span class="pygments-p">,</span> <span class="pygments-n">curr_name</span><span class="pygments-p">)</span> <span class="pygments-ow">in</span> <span class="pygments-n">edges_to_weights</span><span class="pygments-p">:</span></span>
-  <span class="gbold line-num">271</span>              <span class="highlight-pyta"><span class="pygments-n">edges_to_weights</span><span class="pygments-p">[(</span><span class="pygments-n">v_name</span><span class="pygments-p">,</span> <span class="pygments-n">curr_name</span><span class="pygments-p">)]</span><span class="pygments-o">.</span><span class="pygments-n">append</span><span class="pygments-p">(</span><span class="pygments-n">partial_weight</span><span class="pygments-p">)</span></span>
-  <span class="gbold line-num">272</span>          <span class="highlight-pyta"><span class="pygments-k">else</span><span class="pygments-p">:</span></span>
-  <span class="gbold line-num">273</span>              <span class="highlight-pyta"><span class="pygments-n">edges_to_weights</span><span class="pygments-p">[(</span><span class="pygments-n">curr_name</span><span class="pygments-p">,</span> <span class="pygments-n">v_name</span><span class="pygments-p">)]</span> <span class="pygments-o">=</span> <span class="pygments-p">[</span><span class="pygments-n">partial_weight</span><span class="pygments-p">]</span></span>
-  <span class="gbold line-num">274</span>  <span class="highlight-pyta"></span>
-  <span class="gbold line-num">275</span>      <span class="highlight-pyta"><span class="pygments-k">return</span> <span class="pygments-n">new_sources_found</span></span>
-  <span class="grey line-num">276</span>  <span class="grey"></span>
-  <span class="grey line-num">277</span>  <span class="grey"></span>
+                                      <code>  <span class="grey line-num">107</span>                      <span class="grey"><span class="pygments-s1">&#39;padding-bottom&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;2em&#39;</span><span class="pygments-p">,</span></span>
+  <span class="grey line-num">108</span>                      <span class="grey"><span class="pygments-s1">&#39;padding-top&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;1.5em&#39;</span></span>
+  <span class="gbold line-num">109</span>                  <span class="highlight-pyta"><span class="pygments-p">}</span></span>
+  <span class="grey line-num">110</span>              <span class="grey"><span class="pygments-p">),</span></span>
+  <span class="grey line-num">111</span>  <span class="grey"></span>
+</code>
+                                      
+                                    </div>
+                                </div>
+                                
+                                <div class="message">
+                                    <h4 class="message-name">
+                                        [Line 128] Found pycodestyle (PEP8) style error at line 128, column 22: continuation line over-indented for hanging indent
+                                        <span class="slider">
+                                            <button style="float: right; background: #458B00;"> Expand/Collapse </button>
+                                        </span>
+                                    </h4>
+                                    <div class="collapsible">
+                                      
+                                      <code>  <span class="grey line-num">126</span>                  <span class="grey"><span class="pygments-n">style</span><span class="pygments-o">=</span><span class="pygments-p">{</span></span>
+  <span class="grey line-num">127</span>                      <span class="grey"><span class="pygments-s1">&#39;padding-bottom&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;2em&#39;</span></span>
+  <span class="gbold line-num">128</span>                        <span class="highlight-pyta"><span class="pygments-p">}</span></span>
+  <span class="grey line-num">129</span>              <span class="grey"><span class="pygments-p">)</span></span>
+  <span class="grey line-num">130</span>          <span class="grey"><span class="pygments-p">],</span></span>
+</code>
+                                      
+                                    </div>
+                                </div>
+                                
+                                <div class="message">
+                                    <h4 class="message-name">
+                                        [Line 167] Found pycodestyle (PEP8) style error at line 167, column 20: continuation line over-indented for hanging indent
+                                        <span class="slider">
+                                            <button style="float: right; background: #458B00;"> Expand/Collapse </button>
+                                        </span>
+                                    </h4>
+                                    <div class="collapsible">
+                                      
+                                      <code>  <span class="grey line-num">165</span>                             <span class="grey"><span class="pygments-p">}],</span></span>
+  <span class="grey line-num">166</span>                             <span class="grey"><span class="pygments-n">style</span><span class="pygments-o">=</span><span class="pygments-p">{</span><span class="pygments-s1">&#39;width&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;100%&#39;</span><span class="pygments-p">,</span> <span class="pygments-s1">&#39;height&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;45em&#39;</span><span class="pygments-p">,</span> <span class="pygments-s1">&#39;border-style&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;solid&#39;</span><span class="pygments-p">},</span></span>
+  <span class="gbold line-num">167</span>                      <span class="highlight-pyta"><span class="pygments-p">)],</span></span>
+  <span class="grey line-num">168</span>               <span class="grey"><span class="pygments-n">style</span><span class="pygments-o">=</span><span class="pygments-p">{</span></span>
+  <span class="grey line-num">169</span>                   <span class="grey"><span class="pygments-s1">&#39;width&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;70%&#39;</span><span class="pygments-p">,</span></span>
+</code>
+                                      
+                                    </div>
+                                </div>
+                                
+                                <div class="message">
+                                    <h4 class="message-name">
+                                        [Line 171] Found pycodestyle (PEP8) style error at line 171, column 20: continuation line over-indented for hanging indent
+                                        <span class="slider">
+                                            <button style="float: right; background: #458B00;"> Expand/Collapse </button>
+                                        </span>
+                                    </h4>
+                                    <div class="collapsible">
+                                      
+                                      <code>  <span class="grey line-num">169</span>                   <span class="grey"><span class="pygments-s1">&#39;width&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;70%&#39;</span><span class="pygments-p">,</span></span>
+  <span class="grey line-num">170</span>                   <span class="grey"><span class="pygments-s1">&#39;float&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;right&#39;</span></span>
+  <span class="gbold line-num">171</span>                      <span class="highlight-pyta"><span class="pygments-p">}</span></span>
+  <span class="grey line-num">172</span>               <span class="grey"><span class="pygments-p">),</span></span>
+  <span class="grey line-num">173</span>  <span class="grey"></span>
+</code>
+                                      
+                                    </div>
+                                </div>
+                                
+                                <div class="message">
+                                    <h4 class="message-name">
+                                        [Line 184] Found pycodestyle (PEP8) style error at line 184, column 13: continuation line over-indented for hanging indent
+                                        <span class="slider">
+                                            <button style="float: right; background: #458B00;"> Expand/Collapse </button>
+                                        </span>
+                                    </h4>
+                                    <div class="collapsible">
+                                      
+                                      <code>  <span class="grey line-num">182</span>                   <span class="grey"><span class="pygments-s1">&#39;padding&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;.25em .25em .25em .25em&#39;</span><span class="pygments-p">,</span></span>
+  <span class="grey line-num">183</span>                   <span class="grey"><span class="pygments-s1">&#39;margin&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;.25em .25em .25em .25em&#39;</span></span>
+  <span class="gbold line-num">184</span>               <span class="highlight-pyta"><span class="pygments-p">})</span></span>
+  <span class="grey line-num">185</span>  <span class="grey"><span class="pygments-p">],</span></span>
+  <span class="grey line-num">186</span>      <span class="grey"><span class="pygments-n">style</span><span class="pygments-o">=</span><span class="pygments-p">{</span></span>
+</code>
+                                      
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+                        </div>
+                        
+                        <div class="error-instance">
+
+                            <div class="info">
+                                <span class="error-link style-error-id">
+                                    <a href="http://www.cs.toronto.edu/~david/pyta/&#35;C0330" target="_blank">&#10064; C0330 (bad-continuation)</a>
+                                </span>
+                                <span class="occurrences">
+                                9
+                                
+                                 occurrences.
+                                
+                                </span>
+                                <span class="shown">
+                                
+                                 (First 5 shown).
+                                
+                                </span>
+                                <span class="slider">
+                                   <button> Expand/Collapse </button>
+                                </span>
+                            </div>
+
+                            <div class="message-container collapsible">
+                                
+                                <div class="message">
+                                    <h4 class="message-name">
+                                        [Line 106] Wrong continued indentation (add 5 spaces).
+                style={
+                ^    |. This error occurred because of an inconsistent use of number of spaces for indentation.
+                                        <span class="slider">
+                                            <button style="float: right; background: #458B00;"> Expand/Collapse </button>
+                                        </span>
+                                    </h4>
+                                    <div class="collapsible">
+                                      
+                                      <code>  <span class="grey line-num">104</span>                              <span class="grey"><span class="pygments-p">})</span></span>
+  <span class="grey line-num">105</span>              <span class="grey"><span class="pygments-p">],</span></span>
+  <span class="gbold line-num">106</span>                  <span class="highlight-pyta"><span class="pygments-n">style</span><span class="pygments-o">=</span><span class="pygments-p">{</span></span>
+  <span class="grey line-num">107</span>                      <span class="grey"><span class="pygments-s1">&#39;padding-bottom&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;2em&#39;</span><span class="pygments-p">,</span></span>
+  <span class="grey line-num">108</span>                      <span class="grey"><span class="pygments-s1">&#39;padding-top&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;1.5em&#39;</span></span>
+</code>
+                                      
+                                    </div>
+                                </div>
+                                
+                                <div class="message">
+                                    <h4 class="message-name">
+                                        [Line 110] Wrong continued indentation.
+            ),
+            ^       ||. This error occurred because of an inconsistent use of number of spaces for indentation.
+                                        <span class="slider">
+                                            <button style="float: right; background: #458B00;"> Expand/Collapse </button>
+                                        </span>
+                                    </h4>
+                                    <div class="collapsible">
+                                      
+                                      <code>  <span class="grey line-num">108</span>                      <span class="grey"><span class="pygments-s1">&#39;padding-top&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;1.5em&#39;</span></span>
+  <span class="grey line-num">109</span>                  <span class="grey"><span class="pygments-p">}</span></span>
+  <span class="gbold line-num">110</span>              <span class="highlight-pyta"><span class="pygments-p">),</span></span>
+  <span class="grey line-num">111</span>  <span class="grey"></span>
+  <span class="grey line-num">112</span>              <span class="grey"><span class="pygments-n">html</span><span class="pygments-o">.</span><span class="pygments-n">Div</span><span class="pygments-p">(</span><span class="pygments-n">children</span><span class="pygments-o">=</span><span class="pygments-p">[</span></span>
+</code>
+                                      
+                                    </div>
+                                </div>
+                                
+                                <div class="message">
+                                    <h4 class="message-name">
+                                        [Line 126] Wrong continued indentation (add 5 spaces).
+                style={
+                ^    |. This error occurred because of an inconsistent use of number of spaces for indentation.
+                                        <span class="slider">
+                                            <button style="float: right; background: #458B00;"> Expand/Collapse </button>
+                                        </span>
+                                    </h4>
+                                    <div class="collapsible">
+                                      
+                                      <code>  <span class="grey line-num">124</span>                              <span class="grey"><span class="pygments-p">})</span></span>
+  <span class="grey line-num">125</span>              <span class="grey"><span class="pygments-p">],</span></span>
+  <span class="gbold line-num">126</span>                  <span class="highlight-pyta"><span class="pygments-n">style</span><span class="pygments-o">=</span><span class="pygments-p">{</span></span>
+  <span class="grey line-num">127</span>                      <span class="grey"><span class="pygments-s1">&#39;padding-bottom&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;2em&#39;</span></span>
+  <span class="grey line-num">128</span>                        <span class="grey"><span class="pygments-p">}</span></span>
+</code>
+                                      
+                                    </div>
+                                </div>
+                                
+                                <div class="message">
+                                    <h4 class="message-name">
+                                        [Line 128] Wrong hanging indentation.
+                      }
+                |   | ^. This error occurred because of an inconsistent use of number of spaces for indentation.
+                                        <span class="slider">
+                                            <button style="float: right; background: #458B00;"> Expand/Collapse </button>
+                                        </span>
+                                    </h4>
+                                    <div class="collapsible">
+                                      
+                                      <code>  <span class="grey line-num">126</span>                  <span class="grey"><span class="pygments-n">style</span><span class="pygments-o">=</span><span class="pygments-p">{</span></span>
+  <span class="grey line-num">127</span>                      <span class="grey"><span class="pygments-s1">&#39;padding-bottom&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;2em&#39;</span></span>
+  <span class="gbold line-num">128</span>                        <span class="highlight-pyta"><span class="pygments-p">}</span></span>
+  <span class="grey line-num">129</span>              <span class="grey"><span class="pygments-p">)</span></span>
+  <span class="grey line-num">130</span>          <span class="grey"><span class="pygments-p">],</span></span>
+</code>
+                                      
+                                    </div>
+                                </div>
+                                
+                                <div class="message">
+                                    <h4 class="message-name">
+                                        [Line 129] Wrong continued indentation.
+            )
+            ^       ||. This error occurred because of an inconsistent use of number of spaces for indentation.
+                                        <span class="slider">
+                                            <button style="float: right; background: #458B00;"> Expand/Collapse </button>
+                                        </span>
+                                    </h4>
+                                    <div class="collapsible">
+                                      
+                                      <code>  <span class="grey line-num">127</span>                      <span class="grey"><span class="pygments-s1">&#39;padding-bottom&#39;</span><span class="pygments-p">:</span> <span class="pygments-s1">&#39;2em&#39;</span></span>
+  <span class="grey line-num">128</span>                        <span class="grey"><span class="pygments-p">}</span></span>
+  <span class="gbold line-num">129</span>              <span class="highlight-pyta"><span class="pygments-p">)</span></span>
+  <span class="grey line-num">130</span>          <span class="grey"><span class="pygments-p">],</span></span>
+  <span class="grey line-num">131</span>          <span class="grey"><span class="pygments-n">style</span><span class="pygments-o">=</span><span class="pygments-p">{</span></span>
 </code>
                                       
                                     </div>
