@@ -135,7 +135,8 @@ def build_wikigraph(starting_url: str, num_sources: int, sources_per_page: int) 
 def _update_wikigraph(neighbours: list[str], bfs_objects: tuple[list, _Queue],
                       sources_info: tuple[int, int, int],
                       wikigraph: WikiGraph, curr_name: str) -> int:
-    """..."""
+    """Add neighbours to wikigraph, update bfs_objects, and return the number
+    of resources found"""
     # Reset the counter the following while loop
     i = 0
     sources_found_per_page = 0
@@ -236,7 +237,8 @@ def _update_weighted_wikigraph(neighbours: list[tuple], bfs_objects: tuple[list,
                                sources_info: tuple[int, int, int],
                                wikigraph: WeightedWikiGraph,
                                graph_info: tuple[str, dict]) -> int:
-    """..."""
+    """Add neighbours to wikigraph, update bfs_objects, update graph_info, and return the
+    number of resources found"""
     # Reset the counter the following while loop
     i = 0
     sources_found_per_page = 0
@@ -275,7 +277,7 @@ def _update_weighted_wikigraph(neighbours: list[tuple], bfs_objects: tuple[list,
 
 def _add_edges_weights_to_graph(edges_to_weights: dict[tuple, list],
                                 wiki_graph: WeightedWikiGraph) -> None:
-    """..."""
+    """Add edges and weights from edges_to_weights to wiki_graph"""
     for edge in edges_to_weights:
         v1, v2 = edge
         weight = sum(edges_to_weights[edge]) / 2
@@ -290,12 +292,12 @@ if __name__ == '__main__':
 
     python_ta.contracts.check_all_contracts()
 
-    # import python_ta
-    #
-    # python_ta.check_all(config={
-    #     'extra-imports': ['wikigraph', 'wikipedia_html_parsers',
-    #                       'weighted_wikigraph_class'],
-    #     'allowed-io': [],
-    #     'max-line-length': 100,
-    #     'disable': ['E1136']
-    # })
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['wikigraph', 'wikipedia_html_parsers',
+                          'weighted_wikigraph_class'],
+        'allowed-io': [],
+        'max-line-length': 100,
+        'disable': ['E1136']
+    })

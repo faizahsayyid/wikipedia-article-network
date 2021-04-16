@@ -533,7 +533,7 @@ footer {
     <body>
         <header>
             <h1 class="title">PyTA Error Report</h1>
-            <time>Thu. Apr. 15 2021, 11:35:37 PM</time>
+            <time>Fri. Apr. 16 2021, 12:03:29 AM</time>
         </header>
         <main>
             
@@ -589,122 +589,57 @@ footer {
                                 
                                 <div class="message">
                                     <h4 class="message-name">
-                                        [Line 235] This function has too many local variables (19, exceeding limit 15). You should try to reduce the complexity of the function by splitting up it, or combining related objects as a single one.
+                                        [Line 236] This function has too many local variables (19, exceeding limit 15). You should try to reduce the complexity of the function by splitting up it, or combining related objects as a single one.
                                         <span class="slider">
                                             <button style="float: right; background: #458B00;"> Expand/Collapse </button>
                                         </span>
                                     </h4>
                                     <div class="collapsible">
                                       
-                                      <code>  <span class="grey line-num">233</span>  <span class="grey"></span>
-  <span class="grey line-num">234</span>  <span class="grey"></span>
-  <span class="gbold line-num">235</span>  <span class="highlight-pyta"><span class="pygments-k">def</span> <span class="pygments-nf">_update_weighted_wikigraph</span><span class="pygments-p">(</span><span class="pygments-n">neighbours</span><span class="pygments-p">:</span> <span class="pygments-nb">list</span><span class="pygments-p">[</span><span class="pygments-nb">tuple</span><span class="pygments-p">],</span> <span class="pygments-n">bfs_objects</span><span class="pygments-p">:</span> <span class="pygments-nb">tuple</span><span class="pygments-p">[</span><span class="pygments-nb">list</span><span class="pygments-p">,</span> <span class="pygments-n">_Queue</span><span class="pygments-p">],</span></span>
-  <span class="gbold line-num">236</span>                                 <span class="highlight-pyta"><span class="pygments-n">sources_info</span><span class="pygments-p">:</span> <span class="pygments-nb">tuple</span><span class="pygments-p">[</span><span class="pygments-nb">int</span><span class="pygments-p">,</span> <span class="pygments-nb">int</span><span class="pygments-p">,</span> <span class="pygments-nb">int</span><span class="pygments-p">],</span></span>
-  <span class="gbold line-num">237</span>                                 <span class="highlight-pyta"><span class="pygments-n">wikigraph</span><span class="pygments-p">:</span> <span class="pygments-n">WeightedWikiGraph</span><span class="pygments-p">,</span></span>
-  <span class="gbold line-num">238</span>                                 <span class="highlight-pyta"><span class="pygments-n">graph_info</span><span class="pygments-p">:</span> <span class="pygments-nb">tuple</span><span class="pygments-p">[</span><span class="pygments-nb">str</span><span class="pygments-p">,</span> <span class="pygments-nb">dict</span><span class="pygments-p">])</span> <span class="pygments-o">-&gt;</span> <span class="pygments-nb">int</span><span class="pygments-p">:</span></span>
-  <span class="gbold line-num">239</span>      <span class="highlight-pyta"><span class="pygments-sd">&quot;&quot;&quot;...&quot;&quot;&quot;</span></span>
-  <span class="gbold line-num">240</span>      <span class="highlight-pyta"><span class="pygments-c1"># Reset the counter the following while loop</span></span>
-  <span class="gbold line-num">241</span>      <span class="highlight-pyta"><span class="pygments-n">i</span> <span class="pygments-o">=</span> <span class="pygments-mi">0</span></span>
-  <span class="gbold line-num">242</span>      <span class="highlight-pyta"><span class="pygments-n">sources_found_per_page</span> <span class="pygments-o">=</span> <span class="pygments-mi">0</span></span>
-  <span class="gbold line-num">243</span>      <span class="highlight-pyta"><span class="pygments-n">curr_sources_found</span><span class="pygments-p">,</span> <span class="pygments-n">num_sources</span><span class="pygments-p">,</span> <span class="pygments-n">sources_per_page</span> <span class="pygments-o">=</span> <span class="pygments-n">sources_info</span></span>
-  <span class="gbold line-num">244</span>      <span class="highlight-pyta"><span class="pygments-n">visited</span><span class="pygments-p">,</span> <span class="pygments-n">q</span> <span class="pygments-o">=</span> <span class="pygments-n">bfs_objects</span></span>
-  <span class="gbold line-num">245</span>      <span class="highlight-pyta"><span class="pygments-n">curr_name</span><span class="pygments-p">,</span> <span class="pygments-n">edges_to_weights</span> <span class="pygments-o">=</span> <span class="pygments-n">graph_info</span></span>
-  <span class="gbold line-num">246</span>      <span class="highlight-pyta"><span class="pygments-n">new_sources_found</span> <span class="pygments-o">=</span> <span class="pygments-mi">0</span></span>
-  <span class="gbold line-num">247</span>  <span class="highlight-pyta"></span>
-  <span class="gbold line-num">248</span>      <span class="highlight-pyta"><span class="pygments-c1"># stop loop either when we&#39;ve added all the neighbours or curr_url</span></span>
-  <span class="gbold line-num">249</span>      <span class="highlight-pyta"><span class="pygments-c1"># or we found our desired number of sources</span></span>
-  <span class="gbold line-num">250</span>      <span class="highlight-pyta"><span class="pygments-k">while</span> <span class="pygments-ow">not</span> <span class="pygments-p">(</span><span class="pygments-n">i</span> <span class="pygments-o">&gt;=</span> <span class="pygments-nb">len</span><span class="pygments-p">(</span><span class="pygments-n">neighbours</span><span class="pygments-p">)</span></span>
-  <span class="gbold line-num">251</span>                 <span class="highlight-pyta"><span class="pygments-ow">or</span> <span class="pygments-p">(</span><span class="pygments-n">new_sources_found</span> <span class="pygments-o">+</span> <span class="pygments-n">curr_sources_found</span><span class="pygments-p">)</span> <span class="pygments-o">&gt;=</span> <span class="pygments-n">num_sources</span></span>
-  <span class="gbold line-num">252</span>                 <span class="highlight-pyta"><span class="pygments-ow">or</span> <span class="pygments-n">sources_found_per_page</span> <span class="pygments-o">&gt;=</span> <span class="pygments-n">sources_per_page</span><span class="pygments-p">):</span></span>
-  <span class="gbold line-num">253</span>          <span class="highlight-pyta"><span class="pygments-n">v</span><span class="pygments-p">,</span> <span class="pygments-n">partial_weight</span> <span class="pygments-o">=</span> <span class="pygments-n">neighbours</span><span class="pygments-p">[</span><span class="pygments-n">i</span><span class="pygments-p">]</span></span>
-  <span class="gbold line-num">254</span>          <span class="highlight-pyta"><span class="pygments-n">v_link</span><span class="pygments-p">,</span> <span class="pygments-n">v_name</span> <span class="pygments-o">=</span> <span class="pygments-n">v</span></span>
-  <span class="gbold line-num">255</span>          <span class="highlight-pyta"><span class="pygments-n">i</span> <span class="pygments-o">+=</span> <span class="pygments-mi">1</span></span>
-  <span class="gbold line-num">256</span>  <span class="highlight-pyta"></span>
-  <span class="gbold line-num">257</span>          <span class="highlight-pyta"><span class="pygments-c1"># if the neighbour is not in visited, add it to the graph</span></span>
-  <span class="gbold line-num">258</span>          <span class="highlight-pyta"><span class="pygments-k">if</span> <span class="pygments-n">v_link</span> <span class="pygments-ow">not</span> <span class="pygments-ow">in</span> <span class="pygments-n">visited</span><span class="pygments-p">:</span></span>
-  <span class="gbold line-num">259</span>              <span class="highlight-pyta"><span class="pygments-n">q</span><span class="pygments-o">.</span><span class="pygments-n">enqueue</span><span class="pygments-p">(</span><span class="pygments-n">v_link</span><span class="pygments-p">)</span></span>
-  <span class="gbold line-num">260</span>              <span class="highlight-pyta"><span class="pygments-n">visited</span><span class="pygments-o">.</span><span class="pygments-n">append</span><span class="pygments-p">(</span><span class="pygments-n">v_link</span><span class="pygments-p">)</span></span>
-  <span class="gbold line-num">261</span>  <span class="highlight-pyta"></span>
-  <span class="gbold line-num">262</span>              <span class="highlight-pyta"><span class="pygments-k">if</span> <span class="pygments-ow">not</span> <span class="pygments-n">wikigraph</span><span class="pygments-o">.</span><span class="pygments-n">is_vertex_in_graph</span><span class="pygments-p">(</span><span class="pygments-n">v_name</span><span class="pygments-p">):</span></span>
-  <span class="gbold line-num">263</span>                  <span class="highlight-pyta"><span class="pygments-n">wikigraph</span><span class="pygments-o">.</span><span class="pygments-n">add_vertex</span><span class="pygments-p">(</span><span class="pygments-n">v_name</span><span class="pygments-p">,</span> <span class="pygments-n">v_link</span><span class="pygments-p">)</span></span>
-  <span class="gbold line-num">264</span>                  <span class="highlight-pyta"><span class="pygments-n">sources_found_per_page</span> <span class="pygments-o">+=</span> <span class="pygments-mi">1</span></span>
-  <span class="gbold line-num">265</span>                  <span class="highlight-pyta"><span class="pygments-n">new_sources_found</span> <span class="pygments-o">+=</span> <span class="pygments-mi">1</span></span>
-  <span class="gbold line-num">266</span>  <span class="highlight-pyta"></span>
-  <span class="gbold line-num">267</span>          <span class="highlight-pyta"><span class="pygments-c1"># add the edge and weight to edges_to_weights</span></span>
-  <span class="gbold line-num">268</span>          <span class="highlight-pyta"><span class="pygments-k">if</span> <span class="pygments-p">(</span><span class="pygments-n">v_name</span><span class="pygments-p">,</span> <span class="pygments-n">curr_name</span><span class="pygments-p">)</span> <span class="pygments-ow">in</span> <span class="pygments-n">edges_to_weights</span><span class="pygments-p">:</span></span>
-  <span class="gbold line-num">269</span>              <span class="highlight-pyta"><span class="pygments-n">edges_to_weights</span><span class="pygments-p">[(</span><span class="pygments-n">v_name</span><span class="pygments-p">,</span> <span class="pygments-n">curr_name</span><span class="pygments-p">)]</span><span class="pygments-o">.</span><span class="pygments-n">append</span><span class="pygments-p">(</span><span class="pygments-n">partial_weight</span><span class="pygments-p">)</span></span>
-  <span class="gbold line-num">270</span>              <span class="highlight-pyta"><span class="pygments-nb">print</span><span class="pygments-p">(</span><span class="pygments-n">v_name</span> <span class="pygments-o">+</span> <span class="pygments-s1">&#39;, &#39;</span> <span class="pygments-o">+</span> <span class="pygments-n">curr_name</span><span class="pygments-p">)</span></span>
-  <span class="gbold line-num">271</span>          <span class="highlight-pyta"><span class="pygments-k">else</span><span class="pygments-p">:</span></span>
-  <span class="gbold line-num">272</span>              <span class="highlight-pyta"><span class="pygments-n">edges_to_weights</span><span class="pygments-p">[(</span><span class="pygments-n">curr_name</span><span class="pygments-p">,</span> <span class="pygments-n">v_name</span><span class="pygments-p">)]</span> <span class="pygments-o">=</span> <span class="pygments-p">[</span><span class="pygments-n">partial_weight</span><span class="pygments-p">]</span></span>
-  <span class="gbold line-num">273</span>              <span class="highlight-pyta"><span class="pygments-nb">print</span><span class="pygments-p">(</span><span class="pygments-s1">&#39;we got both: &#39;</span> <span class="pygments-o">+</span> <span class="pygments-n">v_name</span> <span class="pygments-o">+</span> <span class="pygments-s1">&#39;, &#39;</span> <span class="pygments-o">+</span> <span class="pygments-n">curr_name</span><span class="pygments-p">)</span></span>
+                                      <code>  <span class="grey line-num">234</span>  <span class="grey"></span>
+  <span class="grey line-num">235</span>  <span class="grey"></span>
+  <span class="gbold line-num">236</span>  <span class="highlight-pyta"><span class="pygments-k">def</span> <span class="pygments-nf">_update_weighted_wikigraph</span><span class="pygments-p">(</span><span class="pygments-n">neighbours</span><span class="pygments-p">:</span> <span class="pygments-nb">list</span><span class="pygments-p">[</span><span class="pygments-nb">tuple</span><span class="pygments-p">],</span> <span class="pygments-n">bfs_objects</span><span class="pygments-p">:</span> <span class="pygments-nb">tuple</span><span class="pygments-p">[</span><span class="pygments-nb">list</span><span class="pygments-p">,</span> <span class="pygments-n">_Queue</span><span class="pygments-p">],</span></span>
+  <span class="gbold line-num">237</span>                                 <span class="highlight-pyta"><span class="pygments-n">sources_info</span><span class="pygments-p">:</span> <span class="pygments-nb">tuple</span><span class="pygments-p">[</span><span class="pygments-nb">int</span><span class="pygments-p">,</span> <span class="pygments-nb">int</span><span class="pygments-p">,</span> <span class="pygments-nb">int</span><span class="pygments-p">],</span></span>
+  <span class="gbold line-num">238</span>                                 <span class="highlight-pyta"><span class="pygments-n">wikigraph</span><span class="pygments-p">:</span> <span class="pygments-n">WeightedWikiGraph</span><span class="pygments-p">,</span></span>
+  <span class="gbold line-num">239</span>                                 <span class="highlight-pyta"><span class="pygments-n">graph_info</span><span class="pygments-p">:</span> <span class="pygments-nb">tuple</span><span class="pygments-p">[</span><span class="pygments-nb">str</span><span class="pygments-p">,</span> <span class="pygments-nb">dict</span><span class="pygments-p">])</span> <span class="pygments-o">-&gt;</span> <span class="pygments-nb">int</span><span class="pygments-p">:</span></span>
+  <span class="gbold line-num">240</span>      <span class="highlight-pyta"><span class="pygments-s2">&quot;&quot;&quot;Add neighbours to wikigraph, update bfs_objects, update graph_info, and return the</span></span>
+  <span class="gbold line-num">241</span>      <span class="highlight-pyta"><span class="pygments-n">number</span> <span class="pygments-n">of</span> <span class="pygments-n">resources</span> <span class="pygments-n">found</span><span class="pygments-s2">&quot;&quot;&quot;</span></span>
+  <span class="gbold line-num">242</span>      <span class="highlight-pyta"><span class="pygments-c1"># Reset the counter the following while loop</span></span>
+  <span class="gbold line-num">243</span>      <span class="highlight-pyta"><span class="pygments-n">i</span> <span class="pygments-o">=</span> <span class="pygments-mi">0</span></span>
+  <span class="gbold line-num">244</span>      <span class="highlight-pyta"><span class="pygments-n">sources_found_per_page</span> <span class="pygments-o">=</span> <span class="pygments-mi">0</span></span>
+  <span class="gbold line-num">245</span>      <span class="highlight-pyta"><span class="pygments-n">curr_sources_found</span><span class="pygments-p">,</span> <span class="pygments-n">num_sources</span><span class="pygments-p">,</span> <span class="pygments-n">sources_per_page</span> <span class="pygments-o">=</span> <span class="pygments-n">sources_info</span></span>
+  <span class="gbold line-num">246</span>      <span class="highlight-pyta"><span class="pygments-n">visited</span><span class="pygments-p">,</span> <span class="pygments-n">q</span> <span class="pygments-o">=</span> <span class="pygments-n">bfs_objects</span></span>
+  <span class="gbold line-num">247</span>      <span class="highlight-pyta"><span class="pygments-n">curr_name</span><span class="pygments-p">,</span> <span class="pygments-n">edges_to_weights</span> <span class="pygments-o">=</span> <span class="pygments-n">graph_info</span></span>
+  <span class="gbold line-num">248</span>      <span class="highlight-pyta"><span class="pygments-n">new_sources_found</span> <span class="pygments-o">=</span> <span class="pygments-mi">0</span></span>
+  <span class="gbold line-num">249</span>  <span class="highlight-pyta"></span>
+  <span class="gbold line-num">250</span>      <span class="highlight-pyta"><span class="pygments-c1"># stop loop either when we&#39;ve added all the neighbours or curr_url</span></span>
+  <span class="gbold line-num">251</span>      <span class="highlight-pyta"><span class="pygments-c1"># or we found our desired number of sources</span></span>
+  <span class="gbold line-num">252</span>      <span class="highlight-pyta"><span class="pygments-k">while</span> <span class="pygments-ow">not</span> <span class="pygments-p">(</span><span class="pygments-n">i</span> <span class="pygments-o">&gt;=</span> <span class="pygments-nb">len</span><span class="pygments-p">(</span><span class="pygments-n">neighbours</span><span class="pygments-p">)</span></span>
+  <span class="gbold line-num">253</span>                 <span class="highlight-pyta"><span class="pygments-ow">or</span> <span class="pygments-p">(</span><span class="pygments-n">new_sources_found</span> <span class="pygments-o">+</span> <span class="pygments-n">curr_sources_found</span><span class="pygments-p">)</span> <span class="pygments-o">&gt;=</span> <span class="pygments-n">num_sources</span></span>
+  <span class="gbold line-num">254</span>                 <span class="highlight-pyta"><span class="pygments-ow">or</span> <span class="pygments-n">sources_found_per_page</span> <span class="pygments-o">&gt;=</span> <span class="pygments-n">sources_per_page</span><span class="pygments-p">):</span></span>
+  <span class="gbold line-num">255</span>          <span class="highlight-pyta"><span class="pygments-n">v</span><span class="pygments-p">,</span> <span class="pygments-n">partial_weight</span> <span class="pygments-o">=</span> <span class="pygments-n">neighbours</span><span class="pygments-p">[</span><span class="pygments-n">i</span><span class="pygments-p">]</span></span>
+  <span class="gbold line-num">256</span>          <span class="highlight-pyta"><span class="pygments-n">v_link</span><span class="pygments-p">,</span> <span class="pygments-n">v_name</span> <span class="pygments-o">=</span> <span class="pygments-n">v</span></span>
+  <span class="gbold line-num">257</span>          <span class="highlight-pyta"><span class="pygments-n">i</span> <span class="pygments-o">+=</span> <span class="pygments-mi">1</span></span>
+  <span class="gbold line-num">258</span>  <span class="highlight-pyta"></span>
+  <span class="gbold line-num">259</span>          <span class="highlight-pyta"><span class="pygments-c1"># if the neighbour is not in visited, add it to the graph</span></span>
+  <span class="gbold line-num">260</span>          <span class="highlight-pyta"><span class="pygments-k">if</span> <span class="pygments-n">v_link</span> <span class="pygments-ow">not</span> <span class="pygments-ow">in</span> <span class="pygments-n">visited</span><span class="pygments-p">:</span></span>
+  <span class="gbold line-num">261</span>              <span class="highlight-pyta"><span class="pygments-n">q</span><span class="pygments-o">.</span><span class="pygments-n">enqueue</span><span class="pygments-p">(</span><span class="pygments-n">v_link</span><span class="pygments-p">)</span></span>
+  <span class="gbold line-num">262</span>              <span class="highlight-pyta"><span class="pygments-n">visited</span><span class="pygments-o">.</span><span class="pygments-n">append</span><span class="pygments-p">(</span><span class="pygments-n">v_link</span><span class="pygments-p">)</span></span>
+  <span class="gbold line-num">263</span>  <span class="highlight-pyta"></span>
+  <span class="gbold line-num">264</span>              <span class="highlight-pyta"><span class="pygments-k">if</span> <span class="pygments-ow">not</span> <span class="pygments-n">wikigraph</span><span class="pygments-o">.</span><span class="pygments-n">is_vertex_in_graph</span><span class="pygments-p">(</span><span class="pygments-n">v_name</span><span class="pygments-p">):</span></span>
+  <span class="gbold line-num">265</span>                  <span class="highlight-pyta"><span class="pygments-n">wikigraph</span><span class="pygments-o">.</span><span class="pygments-n">add_vertex</span><span class="pygments-p">(</span><span class="pygments-n">v_name</span><span class="pygments-p">,</span> <span class="pygments-n">v_link</span><span class="pygments-p">)</span></span>
+  <span class="gbold line-num">266</span>                  <span class="highlight-pyta"><span class="pygments-n">sources_found_per_page</span> <span class="pygments-o">+=</span> <span class="pygments-mi">1</span></span>
+  <span class="gbold line-num">267</span>                  <span class="highlight-pyta"><span class="pygments-n">new_sources_found</span> <span class="pygments-o">+=</span> <span class="pygments-mi">1</span></span>
+  <span class="gbold line-num">268</span>  <span class="highlight-pyta"></span>
+  <span class="gbold line-num">269</span>          <span class="highlight-pyta"><span class="pygments-c1"># add the edge and weight to edges_to_weights</span></span>
+  <span class="gbold line-num">270</span>          <span class="highlight-pyta"><span class="pygments-k">if</span> <span class="pygments-p">(</span><span class="pygments-n">v_name</span><span class="pygments-p">,</span> <span class="pygments-n">curr_name</span><span class="pygments-p">)</span> <span class="pygments-ow">in</span> <span class="pygments-n">edges_to_weights</span><span class="pygments-p">:</span></span>
+  <span class="gbold line-num">271</span>              <span class="highlight-pyta"><span class="pygments-n">edges_to_weights</span><span class="pygments-p">[(</span><span class="pygments-n">v_name</span><span class="pygments-p">,</span> <span class="pygments-n">curr_name</span><span class="pygments-p">)]</span><span class="pygments-o">.</span><span class="pygments-n">append</span><span class="pygments-p">(</span><span class="pygments-n">partial_weight</span><span class="pygments-p">)</span></span>
+  <span class="gbold line-num">272</span>          <span class="highlight-pyta"><span class="pygments-k">else</span><span class="pygments-p">:</span></span>
+  <span class="gbold line-num">273</span>              <span class="highlight-pyta"><span class="pygments-n">edges_to_weights</span><span class="pygments-p">[(</span><span class="pygments-n">curr_name</span><span class="pygments-p">,</span> <span class="pygments-n">v_name</span><span class="pygments-p">)]</span> <span class="pygments-o">=</span> <span class="pygments-p">[</span><span class="pygments-n">partial_weight</span><span class="pygments-p">]</span></span>
   <span class="gbold line-num">274</span>  <span class="highlight-pyta"></span>
   <span class="gbold line-num">275</span>      <span class="highlight-pyta"><span class="pygments-k">return</span> <span class="pygments-n">new_sources_found</span></span>
   <span class="grey line-num">276</span>  <span class="grey"></span>
   <span class="grey line-num">277</span>  <span class="grey"></span>
-</code>
-                                      
-                                    </div>
-                                </div>
-                                
-                            </div>
-
-                        </div>
-                        
-                        <div class="error-instance">
-
-                            <div class="info">
-                                <span class="error-link style-error-id">
-                                    <a href="http://www.cs.toronto.edu/~david/pyta/&#35;E9998" target="_blank">&#10064; E9998 (IO-function-not-allowed)</a>
-                                </span>
-                                <span class="occurrences">
-                                2
-                                
-                                 occurrences.
-                                
-                                </span>
-                                <span class="shown">
-                                
-                                </span>
-                                <span class="slider">
-                                   <button> Expand/Collapse </button>
-                                </span>
-                            </div>
-
-                            <div class="message-container collapsible">
-                                
-                                <div class="message">
-                                    <h4 class="message-name">
-                                        [Line 270] Used IO function print
-                                        <span class="slider">
-                                            <button style="float: right; background: #458B00;"> Expand/Collapse </button>
-                                        </span>
-                                    </h4>
-                                    <div class="collapsible">
-                                      
-                                      <code>  <span class="grey line-num">268</span>          <span class="grey"><span class="pygments-k">if</span> <span class="pygments-p">(</span><span class="pygments-n">v_name</span><span class="pygments-p">,</span> <span class="pygments-n">curr_name</span><span class="pygments-p">)</span> <span class="pygments-ow">in</span> <span class="pygments-n">edges_to_weights</span><span class="pygments-p">:</span></span>
-  <span class="grey line-num">269</span>              <span class="grey"><span class="pygments-n">edges_to_weights</span><span class="pygments-p">[(</span><span class="pygments-n">v_name</span><span class="pygments-p">,</span> <span class="pygments-n">curr_name</span><span class="pygments-p">)]</span><span class="pygments-o">.</span><span class="pygments-n">append</span><span class="pygments-p">(</span><span class="pygments-n">partial_weight</span><span class="pygments-p">)</span></span>
-  <span class="gbold line-num">270</span>              <span class="black"></span><span class="highlight-pyta"><span class="pygments-nb">print</span><span class="pygments-p">(</span><span class="pygments-n">v_name</span> <span class="pygments-o">+</span> <span class="pygments-s1">&#39;, &#39;</span> <span class="pygments-o">+</span> <span class="pygments-n">curr_name</span><span class="pygments-p">)</span></span>
-  <span class="grey line-num">271</span>          <span class="grey"><span class="pygments-k">else</span><span class="pygments-p">:</span></span>
-  <span class="grey line-num">272</span>              <span class="grey"><span class="pygments-n">edges_to_weights</span><span class="pygments-p">[(</span><span class="pygments-n">curr_name</span><span class="pygments-p">,</span> <span class="pygments-n">v_name</span><span class="pygments-p">)]</span> <span class="pygments-o">=</span> <span class="pygments-p">[</span><span class="pygments-n">partial_weight</span><span class="pygments-p">]</span></span>
-</code>
-                                      
-                                    </div>
-                                </div>
-                                
-                                <div class="message">
-                                    <h4 class="message-name">
-                                        [Line 273] Used IO function print
-                                        <span class="slider">
-                                            <button style="float: right; background: #458B00;"> Expand/Collapse </button>
-                                        </span>
-                                    </h4>
-                                    <div class="collapsible">
-                                      
-                                      <code>  <span class="grey line-num">271</span>          <span class="grey"><span class="pygments-k">else</span><span class="pygments-p">:</span></span>
-  <span class="grey line-num">272</span>              <span class="grey"><span class="pygments-n">edges_to_weights</span><span class="pygments-p">[(</span><span class="pygments-n">curr_name</span><span class="pygments-p">,</span> <span class="pygments-n">v_name</span><span class="pygments-p">)]</span> <span class="pygments-o">=</span> <span class="pygments-p">[</span><span class="pygments-n">partial_weight</span><span class="pygments-p">]</span></span>
-  <span class="gbold line-num">273</span>              <span class="black"></span><span class="highlight-pyta"><span class="pygments-nb">print</span><span class="pygments-p">(</span><span class="pygments-s1">&#39;we got both: &#39;</span> <span class="pygments-o">+</span> <span class="pygments-n">v_name</span> <span class="pygments-o">+</span> <span class="pygments-s1">&#39;, &#39;</span> <span class="pygments-o">+</span> <span class="pygments-n">curr_name</span><span class="pygments-p">)</span></span>
-  <span class="grey line-num">274</span>  <span class="grey"></span>
-  <span class="grey line-num">275</span>      <span class="grey"><span class="pygments-k">return</span> <span class="pygments-n">new_sources_found</span></span>
 </code>
                                       
                                     </div>
