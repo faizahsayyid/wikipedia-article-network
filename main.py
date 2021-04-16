@@ -74,9 +74,10 @@ app.layout = html.Div(children=[
                                {'label': 'Background Images off (Faster)', 'value': 'off'}
                            ],
                            value='off',
-                            style={
+                           style={
                                'padding-top': '1em'
-                           }),
+                           }
+                           ),
             dcc.RadioItems(id='graph_type_selection',
                            options=[
                                {'label': '(Weighted) Most common links on page',
@@ -106,7 +107,7 @@ app.layout = html.Div(children=[
                 style={
                     'padding-bottom': '2em',
                     'padding-top': '1.5em'
-                      }
+                }
             ),
 
             html.Div(children=[
@@ -125,7 +126,7 @@ app.layout = html.Div(children=[
             ],
                 style={
                     'padding-bottom': '2em'
-                      }
+                }
             )
         ],
         style={
@@ -164,11 +165,11 @@ app.layout = html.Div(children=[
                                }
                            }],
                            style={'width': '100%', 'height': '45em', 'border-style': 'solid'},
-                    )],
+                       )],
              style={
                  'width': '70%',
                  'float': 'right'
-                    }
+             }
              ),
 
     html.Div(children=[html.H5(id='cytoscape_url', children=""),
@@ -181,7 +182,8 @@ app.layout = html.Div(children=[
                  'float': 'right',
                  'padding': '.25em .25em .25em .25em',
                  'margin': '.25em .25em .25em .25em'
-             })
+             }
+             )
 ],
     style={
         'opacity': '1'
@@ -204,7 +206,7 @@ app.layout = html.Div(children=[
     State('cytoscape_wiki_graph', 'stylesheet'))
 def update_cytoscape_display(n_clicks: int, images: str, weighting: str, url: str, num_sources: str,
                              sources_per_page: str, style_sheet: list) \
-                            -> (list[dict], list[dict], None):
+        -> (list[dict], list[dict], None):
     """This function builds the cytoscape graph and transforms that graph in to the correct
     cytoscape format. It also adds styling to the graph as it is built"""
     # Initially builds the graph,
@@ -331,8 +333,6 @@ def create_txt_download(n_clicks: int, graph_elements: list, url: str, num_s: st
 if __name__ == '__main__':
     # For py_ta, the following errors are disabled for the following reasons:
     #
-    # E9999 (Forbidden Imports) - Since this is our final project and not a strict assignment,
-    # this error is not relevant
     # E9997 (Forbidden Global Variables) - Due to the way dash works, global variables are needed
     # for this project
     # R0913 (Too Many Arguments) - Since dash callbacks need to take in states from several objects
@@ -342,7 +342,11 @@ if __name__ == '__main__':
     #
     # python_ta.check_all(config={
     #     'max-line-length': 100,
-    #     'disable': ['E9999', 'E9997', 'R0913'],
+    #     'extra-imports': ['dash', 'dash_cytoscape', 'dash_html_components',
+    #                       'dash_core_components',
+    #                       'dash.dependencies', 'build_wikigraph', 'wikipedia_html_parsers',
+    #                       'make_txt_file'],
+    #     'disable': ['E9997', 'R0913'],
     #     'max-nested-blocks': 4
     # })
 
