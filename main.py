@@ -3,7 +3,8 @@
 Module Description
 ===============================
 
-[INSERT MODULE DESCRIPTION]
+This module is an interactive app where the user can enter wikipedia links to be drawn as graphs
+using Dash Cytoscape.
 
 Copyright and Usage Information
 ===============================
@@ -73,7 +74,7 @@ app.layout = html.Div(children=[
                                {'label': 'Background Images off (Faster)', 'value': 'off'}
                            ],
                            value='off',
-                           style={
+                            style={
                                'padding-top': '1em'
                            }),
             dcc.RadioItems(id='graph_type_selection',
@@ -105,7 +106,7 @@ app.layout = html.Div(children=[
                 style={
                     'padding-bottom': '2em',
                     'padding-top': '1.5em'
-                }
+                      }
             ),
 
             html.Div(children=[
@@ -124,7 +125,7 @@ app.layout = html.Div(children=[
             ],
                 style={
                     'padding-bottom': '2em'
-                }
+                      }
             )
         ],
         style={
@@ -163,11 +164,12 @@ app.layout = html.Div(children=[
                                }
                            }],
                            style={'width': '100%', 'height': '45em', 'border-style': 'solid'},
-                       )],
+                    )],
              style={
                  'width': '70%',
                  'float': 'right'
-             }),
+                    }
+             ),
 
     html.Div(children=[html.H5(id='cytoscape_url', children=""),
                        html.H5(id='cytoscape_article', children=""),
@@ -327,11 +329,21 @@ def create_txt_download(n_clicks: int, graph_elements: list, url: str, num_s: st
 
 
 if __name__ == '__main__':
+    # For py_ta, the following errors are disabled for the following reasons:
+    #
+    # E9999 (Forbidden Imports) - Since this is our final project and not a strict assignment,
+    # this error is not relevant
+    # E9997 (Forbidden Global Variables) - Due to the way dash works, global variables are needed
+    # for this project
+    # R0913 (Too Many Arguments) - Since dash callbacks need to take in states from several objects
+    # to obtain all the data they need at one time, this has been disabled.
+    #
     # import python_ta
     #
     # python_ta.check_all(config={
     #     'max-line-length': 100,
-    #     'disable': ['E1136', 'E9997', 'R0913', 'E9999'],
+    #     'disable': ['E9999', 'E9997', 'R0913'],
     #     'max-nested-blocks': 4
     # })
+
     app.run_server(debug=True, port=3004)
