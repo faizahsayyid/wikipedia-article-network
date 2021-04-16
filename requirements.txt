@@ -1,0 +1,13 @@
+# CSC111 Project: Wikipedia Article Network Requirements
+
+# Testing and code checking
+pytest
+python-ta~=1.6.3
+
+# Web Scraping and HTML Parsing
+html
+urllib
+
+# Graphics and data visualization
+dash
+dash-cytoscape
