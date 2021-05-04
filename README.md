@@ -20,7 +20,7 @@ Therefore, in order to fulfill our motivation and goal, our main question which 
 * dash-cytoscape
 * html and urllib are already part of the Standard Library that comes with Python 3.9. Thus, it is not required to install it. However, if necessary, please install these libraries as well.
 
-## Other necessary instructions:
+### Other necessary instructions:
 
 * After running the final output link with **Background Images on**, it is possible for the images to fail to display. When that occurs, use Google Chrome instead of Safari.
 * When running [main.py](https://github.com/faizahsayyid/wikipedia-article-network/blob/main/main.py), do not attempt to run two separate instances of the file at once in pycharm. This causes the port to be jammed which returns `OSError: [Errno 48] Address already in use error`. This can be solved by changing the port number a few digits up or down in `app.run_server(debug=True, port=3004)` under `if __name__ == '__main__':`.
